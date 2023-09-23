@@ -493,5 +493,19 @@ class a(object):
         import copy
         return copy.deepcopy(data)
     
+    @classmethod
+    def round(cls, x:Union[float, int], sig: int=6, small_value: float=1.0e-9):
+        import math
+        """
+        Rounds x to the number of {sig} digits
+        :param x:
+        :param sig: signifant digit
+        :param small_value: smallest possible value
+        :return:
+        """
+        x = float(x)
+        return round(x, sig - int(math.floor(math.log10(max(abs(x), abs(small_value))))) - 1)
+    
+    
 Block = a
 
