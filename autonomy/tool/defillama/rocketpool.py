@@ -16,7 +16,7 @@ import autonomy as a
 class RocketPool(a.Tool):       
     description = """
         Connects to the Defillama API and allows the user to select which chain, project, symbol or pool they want. 
-        :param params: A dictionary with optional filters (chain, project, symbol, pool).
+        :param params: A dictionary with optional filters (chain (first letter uppercase), project, symbol, pool).
         :return: Filtered list of pool data.
 
         Example input: 
@@ -26,71 +26,57 @@ class RocketPool(a.Tool):
             "project": "lido",
         }
 
-        here is an example of the output:
-
-        [
-            {
-                'chain': 'Ethereum',
-                'project': 'lido',
-                'symbol': 'STETH',
-                'tvlUsd': 13856337621,
-                'apyBase': 3.6,
-                'apyReward': None,
-                'apy': 3.6,
-                'rewardTokens': None,
-                'pool': '747c1d2a-c668-4682-b9f9-296708a3dd90',
-                'apyPct1D': 0,
-                'apyPct7D': 0,
-                'apyPct30D': -0.4,
-                'stablecoin': False,
-                'ilRisk': 'no',
-                'exposure': 'single',
-                'predictions': {
-                    'predictedClass': 'Stable/Up',
-                    'predictedProbability': 56.00000000000001,
-                'binnedConfidence': 1
-                },
-                'poolMeta': None,
-                'mu': 4.55354,
-                'sigma': 0.04797,
-                'count': 509,
-                'outlier': False,
-                'underlyingTokens': [
-                    '0x0000000000000000000000000000000000000000'
-                ],
-                'il7d': None,
-                'apyBase7d': None,
-                'apyMean30d': 3.70763,
-                'volumeUsd1d': None,
-                'volumeUsd7d': None,
-                'apyBaseInception': None
-            }
-        ]
-
+        here is an input:
+        rocket_pool_instance = RocketPool()
+        result=rocket_pool_instance.call(project="rocket-pool", symbol="RETH")
+        here is an example of the output that corresponds with the above input:
+        [{'apy': 3.21066, 'market': 'rocket-pool', 'asset': 'RETH', 'chain': 'Ethereum', 'timestamp': 1695494506.412746}]
     """
     
 
-    def call(self, chain: str = "ethereum", project:str = 'rocket-pool') -> None:
-            """Initializes the state with the latest Lido APY."""
+
+
+
+
+    def call(self, chain: str = None, project: str = 'rocket-pool', symbol: str = None) -> dict:
+            """Initializes the state with the latest rocket-pool APY."""
             url = "https://yields.llama.fi/pools"
-            response = requests.get(url, timeout=10, params={'chain': chain, 'project': project})
+            # Only include parameters that are not None in the request
+            chain=str(chain).capitalize()
+            params = {k: v for k, v in {'chain': chain, 'project': project, 'symbol': symbol}.items() if v is not None}
+    
+            response = requests.get(url, timeout=10, params=params)
             if response.status_code == 200:
                 response_data = json.loads(response.text)
                 data = response_data.get("data", [])
-                lido_data = next(
-                    (item for item in data if item.get("project") == project),
-                    None,
-                )
-                if lido_data:
-                    return  {
-                        "apy": lido_data["apy"],
-                        "market": project,
-                        "asset": lido_data["symbol"],
-                        "chain": lido_data["chain"],
-                        "timestamp": time.time(),
-
-                    }
+                
+                # Filter data based on provided parameters
+                filtered_data = [
+                    item for item in data if 
+                    (item.get("project") == project if project is not None else True) and 
+                    (item.get("chain") == chain if chain is not None else True) and 
+                    (item.get("symbol") == symbol if symbol is not None else True)
+                ]
+                
+                if filtered_data:
+                    results = []
+                    for item in filtered_data:
+                        results.append({
+                            "apy": item["apy"],
+                            "market": project,
+                            "asset": symbol if symbol is not None else item["symbol"],
+                            "chain": chain if chain is not None else item["chain"],
+                            "timestamp": time.time(),
+                        })
+                    return results
                 else:
-                    return {'error': f'No data found for {project} Pool'}
+                    return [{'error': f'No data found for the given parameters'}]
             else:
-                return {'error': f"Failed to fetch data from API -> Status code: {response.status_code}"}
+                return [{'error': f"Failed to fetch data from API -> Status code: {response.status_code}"}]
+
+# if __name__ == "__main__":
+#      rocket_pool_instance = RocketPool()
+#      result=rocket_pool_instance.call(project="rocket-pool", symbol="RETH")
+#      print(result)
+
+

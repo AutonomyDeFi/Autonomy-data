@@ -1,10 +1,19 @@
-    
+import requests 
+import json
+from typing import Optional, Dict, Any
+import time
+
+import os
+from dotenv import load_dotenv
+from web3 import Web3
+import autonomy as a
+
+load_dotenv()
 
 import autonomy as a
-import requests
-import json
-import time
-class Lido(a.Tool):
+
+
+class AaveV3(a.Tool):       
     description = """
         Connects to the Defillama API and allows the user to select which chain, project, symbol or pool they want. 
         :param params: A dictionary with optional filters (chain (first letter uppercase), project, symbol, pool).
@@ -17,63 +26,25 @@ class Lido(a.Tool):
             "project": "lido",
         }
 
-        here is an example of the output:
-
-        [
-            {
-                'chain': 'Ethereum',
-                'project': 'lido',
-                'symbol': 'STETH',
-                'tvlUsd': 13856337621,
-                'apyBase': 3.6,
-                'apyReward': None,
-                'apy': 3.6,
-                'rewardTokens': None,
-                'pool': '747c1d2a-c668-4682-b9f9-296708a3dd90',
-                'apyPct1D': 0,
-                'apyPct7D': 0,
-                'apyPct30D': -0.4,
-                'stablecoin': False,
-                'ilRisk': 'no',
-                'exposure': 'single',
-                'predictions': {
-                    'predictedClass': 'Stable/Up',
-                    'predictedProbability': 56.00000000000001,
-                'binnedConfidence': 1
-                },
-                'poolMeta': None,
-                'mu': 4.55354,
-                'sigma': 0.04797,
-                'count': 509,
-                'outlier': False,
-                'underlyingTokens': [
-                    '0x0000000000000000000000000000000000000000'
-                ],
-                'il7d': None,
-                'apyBase7d': None,
-                'apyMean30d': 3.70763,
-                'volumeUsd1d': None,
-                'volumeUsd7d': None,
-                'apyBaseInception': None
-            }
-        ]
-
-
-        here is an input:
-        lido_instance = Lido()
-        result=lido_instance.call(project="lido")
+        here is an input:     result=aave_instance.call(chain="Ethereum", symbol="ETH")
         here is an example of the output that corresponds with the above input:
 
-        [{'apy': 3.6, 'market': 'lido', 'asset': 'STETH', 'chain': 'Ethereum', 'timestamp': 1695494321.673901},
-        {'apy': 4.18, 'market': 'lido', 'asset': 'STMATIC', 'chain': 'Polygon', 'timestamp': 1695494321.673903},
-        {'apy': 6.51, 'market': 'lido', 'asset': 'STSOL', 'chain': 'Solana', 'timestamp': 1695494321.6739042}]
-
+        [{'apy': 0.00262, 'market': 'aave-v3', 'asset': 'WSTETH', 'chain': 'Ethereum', 'timestamp': 1695493935.62648},
+        {'apy': 0.08366, 'market': 'aave-v3', 'asset': 'WBTC', 'chain': 'Ethereum', 'timestamp': 1695493935.626482}, 
+        {'apy': 2.28461, 'market': 'aave-v3', 'asset': 'WETH', 'chain': 'Ethereum', 'timestamp': 1695493935.626482}, 
+        {'apy': 0, 'market': 'aave-v3', 'asset': 'SDAI', 'chain': 'Ethereum', 'timestamp': 1695493935.626482}, 
+        {'apy': 0.12134, 'market': 'aave-v3', 'asset': 'RETH', 'chain': 'Ethereum', 'timestamp': 1695493935.626483}, 
+        {'apy': 2.75842, 'market': 'aave-v3', 'asset': 'USDT', 'chain': 'Ethereum', 'timestamp': 1695493935.626483},
+        {'apy': 0, 'market': 'aave-v3', 'asset': 'AAVE', 'chain': 'Ethereum', 'timestamp': 1695493935.626483}, 
+        {'apy': 5.28374, 'market': 'aave-v3', 'asset': 'USDC', 'chain': 'Ethereum', 'timestamp': 1695493935.626484}, 
+        {'apy': 0.01158, 'market': 'aave-v3', 'asset': 'LINK', 'chain': 'Ethereum', 'timestamp': 1695493935.626484},
+        {'apy': 0.26722, 'market': 'aave-v3', 'asset': 'CBETH', 'chain': 'Ethereum', 'timestamp': 1695493935.626485}, 
+        {'apy': 0.21244, 'market': 'aave-v3', 'asset': 'MKR', 'chain': 'Ethereum', 'timestamp': 1695493935.626485}, 
     """
-
     
 
-    def call(self, chain: str = None, project: str = 'lido', symbol: str = None) -> dict:
-            """Initializes the state with the latest lido APY."""
+    def call(self, chain: str = None, project: str = 'aave-v3', symbol: str = None) -> dict:
+            """Initializes the state with the latest AAVE V3 APY."""
             url = "https://yields.llama.fi/pools"
             # Only include parameters that are not None in the request
             chain=str(chain).capitalize()
@@ -108,7 +79,7 @@ class Lido(a.Tool):
             else:
                 return [{'error': f"Failed to fetch data from API -> Status code: {response.status_code}"}]
 
-if __name__ == "__main__":
-     lido_instance = Lido()
-     result=lido_instance.call(chain="ethereum")
-     print(result)
+# if __name__ == "__main__":
+#      aave_instance = AaveV3()
+#      result=aave_instance.call(chain="Ethereum", symbol="WETH")
+#      print(result)

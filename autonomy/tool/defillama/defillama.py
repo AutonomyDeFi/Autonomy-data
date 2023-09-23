@@ -16,7 +16,7 @@ import autonomy as a
 class DefiLlama(a.Tool):       
     description = """
         Connects to the Defillama API and allows the user to select which chain, project, symbol or pool they want. 
-        :param params: A dictionary with optional filters (chain, project, symbol, pool).
+        :param params: A dictionary with optional filters (chain (first letter uppercase), project, symbol, pool).
         :return: Filtered list of pool data.
 
         Example input: 
@@ -66,31 +66,70 @@ class DefiLlama(a.Tool):
                 'apyBaseInception': None
             }
         ]
+        here is an input:    
+        dl_instance = DefiLlama()
+        result=dl_instance.call(chain="ethereum", project="compound")
 
+        here is an example of the output that corresponds with the above input:
+
+        [{'apy': 0.03383, 'market': 'compound', 'asset': 'WETH', 'chain': 'Ethereum', 'timestamp': 1695495056.3511412}
+        {'apy': 0.02071, 'market': 'compound', 'asset': 'WBTC', 'chain': 'Ethereum', 'timestamp': 1695495056.351143}
+        {'apy': 2.44336, 'market': 'compound', 'asset': 'USDC', 'chain': 'Ethereum', 'timestamp': 1695495056.351143}
+        {'apy': 3.59457, 'market': 'compound', 'asset': 'USDT', 'chain': 'Ethereum', 'timestamp': 1695495056.351143}
+        {'apy': 4.04343, 'market': 'compound', 'asset': 'DAI', 'chain': 'Ethereum', 'timestamp': 1695495056.3511438}
+        {'apy': 0.00237, 'market': 'compound', 'asset': 'BAT', 'chain': 'Ethereum', 'timestamp': 1695495056.3511438}
+        {'apy': 0.18519, 'market': 'compound', 'asset': 'UNI', 'chain': 'Ethereum', 'timestamp': 1695495056.351145}
+        {'apy': 0.01424, 'market': 'compound', 'asset': 'SUSHI', 'chain': 'Ethereum', 'timestamp': 1695495056.351145}
+        {'apy': 0.03629, 'market': 'compound', 'asset': 'LINK', 'chain': 'Ethereum', 'timestamp': 1695495056.351145}
+        {'apy': 0.01553, 'market': 'compound', 'asset': 'COMP', 'chain': 'Ethereum', 'timestamp': 1695495056.351146}
+        {'apy': 0.62444, 'market': 'compound', 'asset': 'ZRX', 'chain': 'Ethereum', 'timestamp': 1695495056.351146}
+        {'apy': 0.08457, 'market': 'compound', 'asset': 'AAVE', 'chain': 'Ethereum', 'timestamp': 1695495056.351146}
+        {'apy': 1.75703, 'market': 'compound', 'asset': 'TUSD', 'chain': 'Ethereum', 'timestamp': 1695495056.351147}
+        {'apy': 0.32905, 'market': 'compound', 'asset': 'MKR', 'chain': 'Ethereum', 'timestamp': 1695495056.351147}
+        {'apy': 0.00256, 'market': 'compound', 'asset': 'YFI', 'chain': 'Ethereum', 'timestamp': 1695495056.351147}
+        {'apy': 0.45049, 'market': 'compound', 'asset': 'USDP', 'chain': 'Ethereum', 'timestamp': 1695495056.3511481}]
     """
-    
 
-    def call(self, chain: str = "ethereum", project:str = 'lido') -> None:
-            """Initializes the state with the latest Lido APY."""
-            url = "https://yields.llama.fi/pools"
-            response = requests.get(url, timeout=10, params={'chain': chain, 'project': project})
-            if response.status_code == 200:
-                response_data = json.loads(response.text)
-                data = response_data.get("data", [])
-                lido_data = next(
-                    (item for item in data if item.get("project") == project),
-                    None,
-                )
-                if lido_data:
-                    return  {
-                        "apy": lido_data["apy"],
-                        "market": project,
-                        "asset": lido_data["symbol"],
-                        "chain": lido_data["chain"],
+    def call(self, chain: str = None, project: str = None, symbol: str = None) -> dict:
+        """Initializes the state with the latest Defillama Pool Data."""
+        url = "https://yields.llama.fi/pools"
+        # Only include parameters that are not None in the request
+        chain=str(chain).capitalize()
+
+        params = {k: v for k, v in {'chain': chain.capitalize(), 'project': project, 'symbol': symbol}.items() if v is not None}
+
+        response = requests.get(url, timeout=10, params=params)
+        if response.status_code == 200:
+            response_data = json.loads(response.text)
+            data = response_data.get("data", [])
+            
+            # Filter data based on provided parameters
+            filtered_data = [
+                item for item in data if 
+                (item.get("project") == project if project is not None else True) and 
+                (item.get("chain") == chain if chain is not None else True) and 
+                (item.get("symbol") == symbol if symbol is not None else True)
+            ]
+            
+            if filtered_data:
+                results = []
+                for item in filtered_data:
+                    results.append({
+                        "apy": item["apy"],
+                        "market": project if project is not None else item["project"],
+                        "asset": symbol if symbol is not None else item["symbol"],
+                        "chain": chain if chain is not None else item["chain"],
                         "timestamp": time.time(),
-
-                    }
-                else:
-                    return {'error': f'No data found for {project} Pool'}
+                    })
+                return results
             else:
-                return {'error': f"Failed to fetch data from API -> Status code: {response.status_code}"}
+                return [{'error': f'No data found for the given parameters'}]
+        else:
+            return [{'error': f"Failed to fetch data from API -> Status code: {response.status_code}"}]
+
+
+
+if __name__ == "__main__":
+     dl_instance = DefiLlama()
+     result=dl_instance.call(chain="ethereum", project="compound")
+     print(result)
