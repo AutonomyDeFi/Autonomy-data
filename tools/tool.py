@@ -416,9 +416,9 @@ if __name__ == "__main__":
     # # Test create_contract_instance method with the obtained ABI
     # contract_instance = api.create_contract_instance(contract_address)
     # print("Contract Instance:", contract_instance)
-    # connector = InchConnector()
+    connector = InchConnector()
 
-    # print(GasPrice.get_gas_prices(connector))
+    print(SwaggerInch.get_gas_prices(connector))
 
     # chain_id = 1  # Mainnet Ethereum
     # contract_address_eth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'  # Example: Ethereum (ETH)
@@ -479,4 +479,4 @@ if __name__ == "__main__":
     # else:
     #     print("Token balance fetch failed. Please check your wallet address.")
 
-    BalanceAPI.test_balance_function()
+    # BalanceAPI.test_balance_function()
