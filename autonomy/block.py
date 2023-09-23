@@ -6,6 +6,7 @@ class a(object):
     root_path = os.path.dirname(os.path.realpath(__file__))
     homepath = os.path.expanduser('~')
     library_name = 'autonomy'
+    network = 'local'
     pwd = os.getenv('PWD') #  
     home = os.path.expanduser('~') # the home directory
     __ss58_format__ = 42 # the ss58 format for the substrate address
@@ -506,6 +507,30 @@ class a(object):
         x = float(x)
         return round(x, sig - int(math.floor(math.log10(max(abs(x), abs(small_value))))) - 1)
     
+        
+    @classmethod
+    def serve(cls, tag:str=None, network:str=network, **kwargs):
+        '''
+        Serve a block
+        '''
+        return a.block('server')(block=cls(**kwargs), tag=tag, network=network)
     
+    @classmethod
+    def connect(cls, address, network=network, **kwargs):
+        '''
+        Connect to a block
+        '''
+        return a.block('server.client')(address=address, network=network, **kwargs)
+
+    @classmethod
+    def namespace(cls, network=network):
+        return a.block('server.namespace').get_namespace(network=network)
+    @classmethod
+    def call(cls, address, fn, *args, network=network, **kwargs):
+        '''
+        Call a function in a block
+        '''
+        client = a.connect(address, network=network)
+        return client.forward(fn=fn, args=args, kwargs=kwargs)
 Block = a
 

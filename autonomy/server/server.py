@@ -15,22 +15,19 @@ class ServerHttp(a.Block):
         port: Optional[int] = 8888,
         ip: Optional[str] = '0.0.0.0',
         network: Optional[str] = 'local',
-        sse: bool = True,
         ):
 
-        self.sse = sse
-        self.serializer = a.block('server.serializer')
+        self.serializer = a.block('server.serializer')()
         self.ip = ip
         self.port = port
         self.address = f"{self.ip}:{self.port}"
         self.block = block
-        self.resolve_name(name=name, tag=tag, tag_separator=tag_separator)
+        self.name = self.resolve_name(name=name, tag=tag)
         self.network = network
 
 
         self.set_api(ip=self.ip,
-                     port=self.port,
-                       sse=sse)
+                     port=self.port)
 
     def resolve_name(self, name:str = None, tag:str=None):
         if name == None:
@@ -38,11 +35,11 @@ class ServerHttp(a.Block):
                 name = self.block.block_name()
             else:
                 name = self.block.__name__.lower()
-
         if tag != None:
             name = f'{name}::{tag}'
-            
-    def set_api(self, ip:str, port:int, sse:bool = True):
+        return name
+
+    def set_api(self, ip:str, port:int,):
 
         self.app = FastAPI()
         self.app.add_middleware(
@@ -83,14 +80,14 @@ class ServerHttp(a.Block):
 
             if success:
                 
-                a.print(f'\033[32m Success: {self.name}::{fn} --> {input["address"][:5]}... 🎉\033 ')
+                a.print(f'\033[32m Success: {self.name}::{fn} 🎉\033 ')
             else:
                 a.print(result)
-                a.print(f'\033🚨 Error: {self.name}::{fn} --> {input["address"][:5]}... 🚨\033')
+                a.print(f'\033🚨 Error: {self.name}::{fn} 🚨\033')
 
             return result
         
-        self.serve()
+        self.start()
         
         
     def process_input(self,input: dict) -> bool:
@@ -99,32 +96,19 @@ class ServerHttp(a.Block):
 
 
     def process_result(self,  result):
-        if self.sse == True:
-            # for sse we want to wrap the generator in an eventsource response
-            from sse_starlette.sse import EventSourceResponse
-            result = self.generator_wrapper(result)
-            return EventSourceResponse(result)
-        else:
-            result = self.serializer.serialize({'data': result})
-            return result
+
+        result = self.serializer.serialize({'data': result})
+        return result
         
     
-    def generator_wrapper(self, generator):
-
-        for item in generator:
-            # we wrap the item in a json object, just like the serializer does
-            yield self.serializer.serialize({'data': item})
 
 
     def start(self, **kwargs):
         import uvicorn
 
         try:
-            c.print(f'\033🚀 Serving {self.name} on {self.ip}:{self.port} 🚀\033')
+            a.print(f'\033🚀 Serving {self.name} on {self.address} 🚀\033')
             self.register_server(name=self.name, address=self.address)
-
-            c.print(f'\033🚀 Registered {self.name} on {self.ip}:{self.port} 🚀\033')
-
             uvicorn.run(self.app, host=self.ip, port=self.port)
         except Exception as e:
             a.print(e, color='red')
@@ -157,7 +141,8 @@ class ServerHttp(a.Block):
         '''
         Register a block in the namespace
         '''
-        return a.block('server.namespace').register_server(name, network=self.network)
+
+        return a.block('server.namespace').deregister_server(name, network=self.network)
     
     @classmethod
     def networks(cls):

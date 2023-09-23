@@ -9,13 +9,14 @@ import json
 
 class Client(a.Block):
 
-    def __init__( self, address: str ='0.0.0.0:8888',):
+    def __init__( self, address: str , network: str ='local'):
 
+        namespace = a.namespace(network=network)
+        address = namespace.get(address, address)
         self.loop = a.get_event_loop()
         self.address = address 
         ip = address.split(':')[0]
-        self.set_client(address)
-        self.serializer = a.serializer()
+        self.serializer = a.block('server.serializer')()
         ip, port = address.split(':')
         self.ip = ip 
         self.port = port
@@ -39,6 +40,7 @@ class Client(a.Block):
                         }
         
         request_data = self.serializer.serialize( request_data)
+        request = {'data': request_data}
 
         result = '{}'
         # start a client session and send the request
@@ -56,7 +58,7 @@ class Client(a.Block):
                     result = await asyncio.wait_for(response.json(), timeout=timeout)
                 elif response.content_type == 'text/plain':
                     # result = await asyncio.wait_for(response.text, timeout=timeout)
-                    c.print(response.text)
+                    a.print(response.text)
                     result = json.loads(result)
                 else:
                     raise ValueError(f"Invalid response content type: {response.content_type}")
@@ -67,12 +69,16 @@ class Client(a.Block):
 
     def process_output(self, result):
         ## handles 
-        assert isinstance(result, dict) and 'data'
-        result = self.serializer.deserialize(result['data'])['data']
+        result = self.serializer.deserialize(result)['data']
         return result 
         
-    def forward(self,*args,return_future:bool=False, timeout:str=4, **kwargs):
-        forward_future = asyncio.wait_for(self.async_forward(*args, **kwargs), timeout=timeout)
+    def forward(self,
+                fn:str,
+                args=None, 
+                kwargs=None,
+                return_future:bool=False, 
+                timeout:str=4):
+        forward_future = asyncio.wait_for(self.async_forward(fn=fn, args=args, kwargs=kwargs), timeout=timeout)
         if return_future:
             return forward_future
         else:
