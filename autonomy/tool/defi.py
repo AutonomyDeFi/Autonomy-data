@@ -8,112 +8,22 @@ from dotenv import load_dotenv
 from web3 import Web3
 import autonomy as a
 
-load_dotenv()
 
-
-class RocketPoolConnetor():
-    def __init__(self):
-        # Initialize the state attribute
-        print_messages = []
-
-    def call(self, params: Optional[dict] = None) -> None:
-            """Initializes the state with the latest Lido APY."""
-            url = "https://yields.llama.fi/pools"
-            response = requests.get(url, timeout=10)
-            chains = ["ethereum"]
-
-            if response.status_code == 200:
-                response_data = json.loads(response.text)
-                data = response_data.get("data", [])
-                rocket_pool_data = next(
-                    (item for item in data if item.get("project") == "rocket-pool"),
-                    None,
-                )
-                if rocket_pool_data:
-                    chain_from_data = rocket_pool_data.get("chain", "").lower()
-
-                    if chain_from_data not in chains:
-                        print(f"Skipping unsupported chain: {chain_from_data}")
-                        return
-
-                    apy = {
-                        "apy": rocket_pool_data["apy"],
-                        "market": "Rocket Pool",
-                        "asset": rocket_pool_data["symbol"],
-                        "chain": rocket_pool_data["chain"],
-                        "timestamp": time.time(),
-
-                    }
-
-                    #SEND DATA TO POSTGRES DB
-
-
-                else:
-                    print(
-                        "Rocket Pool data not found in DefiLlama API response."
-                    )
-            else:
-                print(
-                    "Failed to fetch data from DefiLlama API. "
-                    f"Status code: {response.status_code}"
-                )
-
-    class LidoConnector(DefiLlamaPools):
-        def __init__(self):
-            # Initialize the state attribute
-            self.state = {}
-            print_messages = []
-
-
-        def call(self, chain:str, project:str) -> "{apy: float, market: str, asset: str, chain: str, timestamp: float}":
-                """Initializes the state with the latest Lido APY."""
-                url = "https://yields.llama.fi/pools"
-                response = requests.get(url, timeout=10, params={'chain': chain, 'project': project})
-                chains = ["ethereum", "polygon"]
-
-                if response.status_code == 200:
-                    response_data = json.loads(response.text)
-                    data = response_data.get("data", [])
-                    for item in data:
-                        if item.get("project") != "lido":
-                            continue
-
-                        chain_from_data = item.get("chain", "").lower()
-
-                        if chain_from_data not in chains:
-                            print(f"Skipping unsupported chain: {chain_from_data}")
-                            continue
-
-                        response = {
-                            "apy": item["apy"],
-                            "market": "Lido",
-                            "asset": item["symbol"],
-                            "chain": item["chain"],
-                            "timestamp": time.time(),
-
-                        }
-                else:
-                    print(
-                        "Failed to fetch data from DefiLlama API. "
-                        f"Status code: {response.status_code}"
-                    )
-                    response = {'error': f"Failed to fetch data from DefiLlama API -> Status code: {response.status_code}"}
+class Inch:
+    def __init__(self, 
+                 api_key: Optional[str] = '1INCH_API_KEY',
+                etherscan_api_key: Optional[str] = 'ETHERSCAN_API_KEY',
+                url: Optional[str] = "https://api.1inch.dev/price/v1.1/1"
                 
-                return response
-
-
-class InchConnector:
-    def __init__(self):
-        self.API_KEY = os.getenv("1INCH_API_KEY")
-        self.ETHERSCAN_API_KEY=os.getenv("ETHERSCAN_API_KEY")
-class SpotPrice(InchConnector):
-    def __init__(self):
-        InchConnector.__init__(self)
-        self.url = "https://api.1inch.dev/price/v1.1/1"
+                 ):
+        load_dotenv()
+        self.api_key = os.getenv(api_key, api_key)
+        self.etherscan_api_key=os.getenv(etherscan_api_key, etherscan_api_key)
+        self.url = url
 
     def get_whitelisted_token_prices(self):
         
-        response = requests.get(self.url,  headers={'Authorization': f'Bearer {self.API_KEY}'})
+        response = requests.get(self.url,  headers={'Authorization': f'Bearer {self.api_key}'})
         if response.status_code == 200:
             prices = response.json()
             print("Prices for whitelisted tokens:")
@@ -140,14 +50,19 @@ class SpotPrice(InchConnector):
     def get_prices_for_addresses(self,addresses):
         url = f"{self.url}{','.join(addresses)}"
 
-        response = requests.get(self.url,  headers={'Authorization': f'Bearer {self.API_KEY}'})
+        response = requests.get(url,  headers={'Authorization': f'Bearer {self.API_KEY}'})
         if response.status_code == 200:
             prices = response.json()
             print("Prices for requested tokens:")
+            response = {}
             for token_address, price in prices.items():
-                print(f"{token_address}: {price}")
+                response[token_address] = price
         else:
-            print("Failed to fetch token prices.")
+            response =  {"error": f"Failed to fetch token prices. Error code: {response.status_code}"}
+
+        return response
+    
+
 class BalanceAPI(InchConnector):
     """Gets the balances of a wallet address
     """
