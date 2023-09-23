@@ -9,7 +9,6 @@ import os
 from dotenv import load_dotenv
 from web3 import Web3
 
-
 load_dotenv()
 
 class PostgresConnector:
@@ -79,7 +78,6 @@ class RocketPoolConnetor(APYRest):
         self.state = {}
         self.log_messages = []
         self.db_connector = db_connector
-
 
     def log(self, message: str) -> None:
         # Simple logger to store log messages
@@ -266,98 +264,17 @@ class SwapAPI(InchConnector):
         return await self.web3.send_raw_transaction(self, signed_transaction.rawTransaction)
 
     # Prepare approval transaction, considering gas limit
-    async def buildTxForApproveTradeWithRouter(self, token_address, amount=None)-> Dict[str, Any]:
+    async def buildTxForApproveTradeWithRouter(self, token_address, wallet_address, amount=None)-> Dict[str, Any]:
         # Assuming you have defined apiRequestUrl() function to construct the URL
         url = self.apiRequestUrl("/approve/transaction", {"tokenAddress": token_address, "amount": amount} if amount else {"tokenAddress": token_address})
         response = requests.get(url, headers=self.headers)
         transaction = response.json() 
 
         # Estimate gas limit
-        wallet_address = "YOUR_WALLET_ADDRESS"
+        wallet_address = wallet_address
         gas_limit = self.web3.eth.estimateGas(transaction, from_address=wallet_address)
         #TODO Check return type
         return {**transaction, "gas": gas_limit}
-
-class OrderBookAPI(InchConnector):
-    def __init__(self, wallet_key, wallet_address):
-        super().__init__()
-        self.wallet_key = wallet_key
-        self.wallet_address = wallet_address
-        self.limit_order_contract = "0x1111111254EEB25477B68fb85Ed929f73A960582"
-        self.chain_id = 1
-
-    def get_contract_abi(self, contract_address):
-        endpoint = f"https://api.etherscan.io/api?module=contract&action=getabi&address={contract_address}&apikey={self.ETHERSCAN_API_KEY}"
-        response = requests.get(endpoint)
-        if response.status_code == 200:
-            return response.json()["result"]
-        else:
-            print(f"Failed to fetch contract ABI. Error code: {response.status_code}")
-            return None
-
-    def create_contract_instance(self, contract_address):
-        contract_abi = self.get_contract_abi(contract_address)
-        return self.w3.eth.contract(address=contract_address, abi=contract_abi)
-
-    def get_offsets(self, interactions):
-        # Implement logic to calculate the offsets
-        pass
-
-    def trim0x(self, hexString):
-        return hexString[2:] if hexString.startswith('0x') else hexString
-
-    def fix_data_types(self, data, types):
-        fixed_data = {}
-        for dictionary in types:
-            if "bytes" in dictionary["type"]:
-                fixed_data[dictionary["name"]] = self.w3.toBytes(hexstr=data[dictionary["name"]])
-            elif "int" in dictionary["type"]:
-                fixed_data[dictionary["name"]] = int(data[dictionary["name"]])
-            else:
-                fixed_data[dictionary["name"]] = data[dictionary["name"]]
-        return fixed_data
-
-    def create_and_sign_order(self, order_data, order_types):
-        eip712_data = {
-            "primaryType": "Order",
-            "types": {
-                "EIP712Domain": [
-                    {"name": "name", "type": "string"},
-                    {"name": "version", "type": "string"},
-                    {"name": "chainId", "type": "uint256"},
-                    {"name": "verifyingContract", "type": "address"},
-                ],
-                "Order": order_types,
-            },
-            "domain": {
-                "name": "1inch Aggregation Router",
-                "version": "5",
-                "chainId": self.chain_id,
-                "verifyingContract": self.limit_order_contract,
-            },
-            "message": self.fix_data_types(order_data, order_types),
-        }
-
-        encoded_message = encode_structured_data(eip712_data)
-        signed_message = self.w3.eth.account.sign_message(encoded_message, self.wallet_key)
-
-        return {
-            "orderHash": signed_message.messageHash.hex(),
-            "signature": signed_message.signature.hex(),
-            "data": order_data,
-        }
-
-    def broadcast_order(self, limit_order):
-        limit_order_url = f"https://api.1inch.dev/orderbook/v3.0/{self.chain_id}"
-        headers = {
-            "accept": "application/json, text/plain, */*",
-            "content-type": "application/json",
-            "Authorization": f"Bearer {self.API_KEY}",
-        }
-
-        response = requests.post(url=limit_order_url, headers=headers, json=limit_order)
-        return response
-    
 class BalanceAPI(InchConnector):
     """Gets the balances of a wallet address
     """
