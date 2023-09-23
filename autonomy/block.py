@@ -272,8 +272,8 @@ class a(object):
         for k,v in fn_schema['input'].items():
             v = str(v)
             if '<class ' in v:
-                fn_schema['input'][k] =  v.split("<class '")[-1].split("'")[0]
-        
+                fn_schema['input'][k] =  str(v.split("<class '")[-1].split("'")[0])
+            fn_schema['input'][k] = str(v)
         fn_schema['output'] = fn_schema['input'].pop('return', None)
         
         fn_schema['default'] = cls.get_function_defaults(fn=fn) 
@@ -626,6 +626,48 @@ class a(object):
         import random
         return random.choice(*args, **kwargs)
 
+    @classmethod
+    def dict2str(cls, data:dict, indent:int = 4) -> str:
+        import json
+        return json.dumps(data, indent=indent)
+    
+    @classmethod
+    def str2dict(cls, data:str) -> dict:
+        import json
+        return json.loads(data)
+
+    @classmethod
+    def tool2info(cls, return_json_str:bool = False):
+        import json
+        tool2info= {}
+        for tool in a.tools(info=False):
+            tool_info = a.block(tool).info()
+            tool2info[tool] = tool_info
+            if return_json_str:
+                print(tool_info['schema']['input'])
+                tool2info[tool] = json.dumps(tool_info, indent=4)
+
+        cls.put_json('./tool2info.json', tool2info)
+        return tool2info
+    
+    @classmethod
+    def tool2vec(cls, batch_size:int = 10):
+        model = a.block('llm.openai')()
+        tool2info = cls.tool2info(return_json_str=True)
+        tools = list(tool2info.keys())
+        infos = list(tool2info.values())
+
+        tool2vec = {}
+        for i in range(0, len(tools), batch_size):
+            print(f'Generating vectors for {i} - {i+batch_size} out of {len(tools)}')
+            batch_tools = tools[i:i+batch_size]
+            batch_infos = infos[i:i+batch_size]
+            vectors = model.embed(input=batch_infos)
+            for tool, vector in zip(batch_tools, vectors):
+                tool2vec[tool]  = vector
+
+        cls.put_json('./tool2vec.json', tool2vec)
+            
     
 
 Block = a
