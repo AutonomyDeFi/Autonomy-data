@@ -20,7 +20,7 @@ class Embeddings:
         self.workspace_path = workspace_path
         openai.api_key = os.getenv("OPENAI_API_KEY", "")
 
-        self.DOC_EMBEDDINGS_MODEL = f"text-embedding-ada-002"
+        self.TOOL_EMBEDDINGS_MODEL = f"text-embedding-ada-002"
         self.QUERY_EMBEDDINGS_MODEL = f"text-embedding-ada-002"
 
         self.SEPARATOR = "\n* "
@@ -30,7 +30,7 @@ class Embeddings:
 
     def compute_repository_embeddings(self):
         try:
-            playground_data_path = os.path.join(self.workspace_path, 'embeddings_folder')
+            playground_data_path = os.path.join(self.workspace_path, 'playground_data')
 
             # Delete the contents of the playground_data directory but not the directory itself
             # This is to ensure that we don't have any old data lying around
@@ -55,11 +55,11 @@ class Embeddings:
         df = pd.read_csv(os.path.join(self.workspace_path, '/Users/marissaposner/Autonomy-data-1/embeddings_folder\\repository_info.csv'))
         df = df.set_index(["filePath", "lineCoverage"])
         self.df = df
-        context_embeddings = self.compute_doc_embeddings(df)
-        self.save_doc_embeddings_to_csv(context_embeddings, df, os.path.join(self.workspace_path, 'playground_data\\doc_embeddings.csv'))
+        context_embeddings = self.compute_tool_embeddings(df)
+        self.save_toolget_tool_embedding_embeddings_to_csv(context_embeddings, df, os.path.join(self.workspace_path, 'playground_data\\tool_embeddings.csv'))
 
         try:
-            self.document_embeddings = self.load_embeddings(os.path.join(self.workspace_path, 'playground_data\\doc_embeddings.csv'))
+            self.document_embeddings = self.load_embeddings(os.path.join(self.workspace_path, 'playground_data\\tool_embeddings.csv'))
         except:
             pass
 
@@ -141,13 +141,13 @@ class Embeddings:
         )
         return result["data"][0]["embedding"]
 
-    def get_doc_embedding(self, text: str) -> list[float]:
-        return self.get_embedding(text, self.DOC_EMBEDDINGS_MODEL)
+    def get_tool_embedding(self, text: str) -> list[float]:
+        return self.get_embedding(text, self.TOOL_EMBEDDINGS_MODEL)
 
     def get_query_embedding(self, text: str) -> list[float]:
         return self.get_embedding(text, self.QUERY_EMBEDDINGS_MODEL)
 
-    def compute_doc_embeddings(self, df: pd.DataFrame) -> dict[tuple[str, str], list[float]]:
+    def compute_tool_embeddings(self, df: pd.DataFrame) -> dict[tuple[str, str], list[float]]:
         """
         Create an embedding for each row in the dataframe using the OpenAI Embeddings API.
 
@@ -158,15 +158,15 @@ class Embeddings:
             # Wait one second before making the next call to the OpenAI Embeddings API
             # print("Waiting one second before embedding next row\n")
             time.sleep(1)
-            embeddings[idx] = self.get_doc_embedding(r.content.replace("\n", " "))
+            embeddings[idx] = self.get_tool_embedding(r.content.replace("\n", " "))
         return embeddings
 
-    def save_doc_embeddings_to_csv(self, doc_embeddings: dict, df: pd.DataFrame, csv_filepath: str):
-        # Get the dimensionality of the embedding vectors from the first element in the doc_embeddings dictionary
-        if len(doc_embeddings) == 0:
+    def save_tool_embeddings_to_csv(self, tool_embeddings: dict, df: pd.DataFrame, csv_filepath: str):
+        # Get the dimensionality of the embedding vectors from the first element in the tool_embeddings dictionary
+        if len(tool_embeddings) == 0:
             return
 
-        EMBEDDING_DIM = len(list(doc_embeddings.values())[0])
+        EMBEDDING_DIM = len(list(tool_embeddings.values())[0])
 
         # Create a new dataframe with the filePath, lineCoverage, and embedding vector columns
         embeddings_df = pd.DataFrame(columns=["filePath", "lineCoverage"] + [f"{i}" for i in range(EMBEDDING_DIM)])
@@ -174,7 +174,7 @@ class Embeddings:
         # Iterate over the rows in the original dataframe
         for idx, _ in df.iterrows():
             # Get the embedding vector for the current row
-            embedding = doc_embeddings[idx]
+            embedding = tool_embeddings[idx]
             # Create a new row in the embeddings dataframe with the filePath, lineCoverage, and embedding vector values
             row = [idx[0], idx[1]] + embedding
             embeddings_df.loc[len(embeddings_df)] = row
@@ -195,7 +195,7 @@ class Embeddings:
         query_embedding = self.get_query_embedding(query)
         
         document_similarities = sorted([
-            (self.vector_similarity(query_embedding, doc_embedding), doc_index) for doc_index, doc_embedding in contexts.items()
+            (self.vector_similarity(query_embedding, tool_embedding), tool_index) for tool_index, tool_embedding in contexts.items()
         ], reverse=True)
         
         return document_similarities
