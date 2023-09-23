@@ -1,0 +1,29 @@
+uvicorn
+fastapi
+substrate-interface
+torch
+datasets
+transformers
+diffusers
+safetensors
+accelerate
+#visual tools
+streamlit
+plotly
+sse-starlette
+#misc
+msgpack_numpy
+retry
+psutil
+openai
+scipy
+loguru
+rich
+aiofiles
+aiohttp
+nest_asyncio
+
+# ray
+# ray[default]
+# ray[tune]
+#logging
