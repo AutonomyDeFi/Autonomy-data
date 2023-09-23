@@ -5,5 +5,5 @@ Autonomy is an autonomous AI Agent and Data marketplace that allows users to buy
 - Install `Python 3.9.14` using the Python version management tool and activate that version
 - Install psycopg2
 - Setup the backend, ensure you have python 3.9 or great installed
-- `cd backend` and run the following steps:
+- Run the following steps:
   - run `pip install -e .` (Install the 'backend' package)
