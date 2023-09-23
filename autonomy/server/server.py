@@ -12,15 +12,15 @@ class ServerHttp(a.Block):
         block: a.Block,
         name : str = None,
         tag = None,
-        port: Optional[int] = 8888,
-        ip: Optional[str] = '0.0.0.0',
+        address:str = None,
         network: Optional[str] = 'local',
         ):
 
         self.serializer = a.block('server.serializer')()
+        self.address = a.resolve_address(address)
+        ip, port = self.address.split(':')
         self.ip = ip
-        self.port = port
-        self.address = f"{self.ip}:{self.port}"
+        self.port = int(port)
         self.block = block
         self.name = self.resolve_name(name=name, tag=tag)
         self.network = network
@@ -150,3 +150,5 @@ class ServerHttp(a.Block):
         Get a list of networks
         '''
         return a.block('server.namespace').networks()
+
+    

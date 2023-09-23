@@ -532,5 +532,101 @@ class a(object):
         '''
         client = a.connect(address, network=network)
         return client.forward(fn=fn, args=args, kwargs=kwargs)
+    
+
+    # PORT LAND
+    @classmethod
+    def port_free(cls, *args, **kwargs) -> bool:
+        return not cls.port_used(*args, **kwargs)
+
+    @classmethod
+    def port_available(cls, port:int, ip:str ='0.0.0.0'):
+        return not cls.port_used(port=port, ip=ip)
+        
+
+
+    @classmethod
+    def port_used(cls, port: int, ip: str = '0.0.0.0', timeout: int = 1):
+        import socket
+        
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            # Set the socket timeout
+            sock.settimeout(timeout)
+
+            # Try to connect to the specified IP and port
+            try:
+                sock.connect((ip, port))
+                return True
+            except socket.error:
+                return False
+            
+
+    default_port_range = [50050, 50150]
+    @classmethod
+    def ports(cls):
+        return cls.get('ports', list(range(*cls.default_port_range)) )
+    
+    @classmethod
+    def set_ports(cls, start_port:int, end_port:int):
+        assert end_port > start_port, f'End port must be greater than start port. {start_port} > {end_port}'
+
+        ports = list(range(start_port, end_port))
+        cls.put('ports', ports)
+        return {'status': 'success', 'msg': f'Port range updated to {start_port} - {end_port}.'}
+    
+
+    @classmethod
+    def used_ports(cls, ports:List[int] = None, ip:str = '0.0.0.0'):
+        '''
+        Get availabel ports out of port range
+        
+        Args:
+            ports: list of ports
+            ip: ip address
+        
+        '''
+        if ports == None:
+            ports = cls.ports()
+        async def check_port(port, ip):
+            return cls.port_used(port=port, ip=ip)
+        jobs =  [check_port(port=port, ip=ip) for port in ports]
+        results = cls.gather(jobs)
+        used_ports = [port for port, result in zip(ports, results) if isinstance(result, bool) and result]
+        return used_ports
+    @classmethod
+    def free_ports(cls, ports:List[int] = None, ip:str = '0.0.0.0'):
+        ports = cls.ports()
+        used_ports = cls.used_ports(ports=ports, ip=ip)
+        free_ports = [port for port in ports if port not in used_ports]
+        return free_ports
+    
+    @classmethod
+    def free_port(cls, ip:str = '0.0.0.0'):
+        return a.choice(cls.free_ports(ip=ip))
+    @classmethod
+    def free_address(cls,ip='0.0.0.0'):
+        free_port = a.free_port(ip=ip)
+        address = f'{ip}:{free_port}'
+        return address
+    
+    @classmethod
+    def resolve_address(cls, address:str = None) -> str:
+        if address == None:
+            address = a.free_address()
+        assert isinstance(address, str), 'Address must be a string.'
+        assert ':' in address, 'Address must be in the form ip:port'
+        assert len(address.split(':')) == 2, 'Address must be in the form ip:port'
+        ip, port = address.split(':')
+        assert a.port_used(port=int(port), ip=ip) == False, f'Port {port} is already in use.'
+        return address
+
+
+    @classmethod
+    def choice(cls, *args, **kwargs):
+        import random
+        return random.choice(*args, **kwargs)
+
+    
+
 Block = a
 
