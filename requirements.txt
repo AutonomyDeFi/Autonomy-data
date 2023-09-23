@@ -22,6 +22,8 @@ rich
 aiofiles
 aiohttp
 nest_asyncio
+web3
+python-dotenv
 
 # ray
 # ray[default]

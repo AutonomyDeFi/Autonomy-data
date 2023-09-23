@@ -1,10 +1,8 @@
 import autonomy as a
 
 class Agent(a.Block):
+
     def __init__(self,
-                name='agent',
-                description='This is a base agent that does nothing.', 
-                tags=['defi', 'agent'],
                 llm = 'openai::gpt4',
                 tools=[]
                 ):

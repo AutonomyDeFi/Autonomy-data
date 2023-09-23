@@ -526,12 +526,12 @@ class a(object):
     def namespace(cls, network=network):
         return a.block('server.namespace').get_namespace(network=network)
     @classmethod
-    def call(cls, address, fn, *args, network=network, **kwargs):
+    def call(cls, address, fn, *args, network=network, timeout=10, **kwargs):
         '''
         Call a function in a block
         '''
         client = a.connect(address, network=network)
-        return client.forward(fn=fn, args=args, kwargs=kwargs)
+        return client.forward(fn=fn, args=args, kwargs=kwargs, timeout=timeout)
     
 
     # PORT LAND
