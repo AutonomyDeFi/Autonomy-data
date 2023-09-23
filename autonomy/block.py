@@ -11,15 +11,6 @@ class a(object):
     home = os.path.expanduser('~') # the home directory
     __ss58_format__ = 42 # the ss58 format for the substrate address
 
-    @classmethod
-    def tools(cls, search: str = None, info:bool = False) -> list:
-        tools =  a.blocks('tool')
-        if search != None:
-            tools = [t for t in tools if search in t]
-        tools = sorted(tools)
-        if info == True:
-            tools = [a.block(t).info() for t in tools]
-        return tools
 
     @classmethod
     def agents(cls, search: str= None) -> list:
@@ -637,6 +628,17 @@ class a(object):
         return json.loads(data)
 
     @classmethod
+    def tools(cls, search: str = None, info:bool = False) -> list:
+        tools =  a.blocks('tool')
+        if search != None:
+            tools = [t for t in tools if search in t]
+        tools = sorted(tools)
+        if info == True:
+            tools = [a.block(t).info() for t in tools]
+        return tools
+
+
+    @classmethod
     def tool2info(cls, return_json_str:bool = False):
         import json
         tool2info= {}
@@ -667,7 +669,8 @@ class a(object):
                 tool2vec[tool]  = vector
 
         cls.put_json('./tool2vec.json', tool2vec)
-            
+
+     
     
 
 Block = a
