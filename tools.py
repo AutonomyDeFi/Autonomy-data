@@ -222,59 +222,6 @@ class SpotPrice(InchConnector):
                 print(f"{token_address}: {price}")
         else:
             print("Failed to fetch token prices.")
-
-class SwapAPI(InchConnector):
-    def __init__(self, chainId, web3RpcUrl):
-        InchConnector.__init__(self)
-        self.chainId = chainId
-        self.url = f"https://api.1inch.dev/swap/v5.2/{chainId}"
-        self.web3RpcUrl = web3RpcUrl
-        self.web3 = Web3(web3RpcUrl)
-        self.headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.API_KEY}",
-        }
-    # Construct full API request URL
-    def apiRequestUrl(self, methodName, queryParams):
-        return f"{self.apiBaseUrl}{methodName}?{'&'.join([f'{key}={value}' for key, value in queryParams.items()])}"
-
-    # Function to check token allowance
-    def checkAllowance(self, tokenAddress, walletAddress):
-        url = self.apiRequestUrl("/approve/allowance", {"tokenAddress": tokenAddress, "walletAddress": walletAddress})
-        response = requests.get(url, headers=self.headers)
-        data = response.json()
-        return data.get("allowance")
-    
-    # async def broad_cast_raw_transaction(self, raw_transaction):
-    #     data = json.dumps({"rawTransaction": raw_transaction})
-    #     #broadcast to rpc w webtpy
-    #     #
-    #     response = await requests.post(self.url, data=data, headers=self.headers)
-        
-    #     if response.status_code == 200:
-    #         res_json = response.json()
-    #         return res_json.get("transactionHash")
-    #     else:
-    #         response.raise_for_status()
-
-    # Sign and post a transaction, return its hash
-    async def signAndSendTransaction(self,transaction, private_key):
-        signed_transaction = self.web3.eth.account.signTransaction(transaction, private_key)
-        #broadcast to rpc w web3py
-        return await self.web3.send_raw_transaction(self, signed_transaction.rawTransaction)
-
-    # Prepare approval transaction, considering gas limit
-    async def buildTxForApproveTradeWithRouter(self, token_address, wallet_address, amount=None)-> Dict[str, Any]:
-        # Assuming you have defined apiRequestUrl() function to construct the URL
-        url = self.apiRequestUrl("/approve/transaction", {"tokenAddress": token_address, "amount": amount} if amount else {"tokenAddress": token_address})
-        response = requests.get(url, headers=self.headers)
-        transaction = response.json() 
-
-        # Estimate gas limit
-        wallet_address = wallet_address
-        gas_limit = self.web3.eth.estimateGas(transaction, from_address=wallet_address)
-        #TODO Check return type
-        return {**transaction, "gas": gas_limit}
 class BalanceAPI(InchConnector):
     """Gets the balances of a wallet address
     """
@@ -388,6 +335,59 @@ class SwaggerInch(InchConnector):
         json_blob = json.dumps(response_data, indent=4)  # Convert the Python dictionary to a JSON formatted string
         
         return json_blob
+    
+class SwapAPI(InchConnector):
+    def __init__(self, chainId, web3RpcUrl):
+        InchConnector.__init__(self)
+        self.chainId = chainId
+        self.url = f"https://api.1inch.dev/swap/v5.2/{chainId}"
+        self.web3RpcUrl = web3RpcUrl
+        self.web3 = Web3(web3RpcUrl)
+        self.headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.API_KEY}",
+        }
+    # Construct full API request URL
+    def apiRequestUrl(self, methodName, queryParams):
+        return f"{self.apiBaseUrl}{methodName}?{'&'.join([f'{key}={value}' for key, value in queryParams.items()])}"
+
+    # Function to check token allowance
+    def checkAllowance(self, tokenAddress, walletAddress):
+        url = self.apiRequestUrl("/approve/allowance", {"tokenAddress": tokenAddress, "walletAddress": walletAddress})
+        response = requests.get(url, headers=self.headers)
+        data = response.json()
+        return data.get("allowance")
+    
+    # async def broad_cast_raw_transaction(self, raw_transaction):
+    #     data = json.dumps({"rawTransaction": raw_transaction})
+    #     #broadcast to rpc w webtpy
+    #     #
+    #     response = await requests.post(self.url, data=data, headers=self.headers)
+        
+    #     if response.status_code == 200:
+    #         res_json = response.json()
+    #         return res_json.get("transactionHash")
+    #     else:
+    #         response.raise_for_status()
+
+    # Sign and post a transaction, return its hash
+    async def signAndSendTransaction(self,transaction, private_key):
+        signed_transaction = self.web3.eth.account.signTransaction(transaction, private_key)
+        #broadcast to rpc w web3py
+        return await self.web3.send_raw_transaction(self, signed_transaction.rawTransaction)
+
+    # Prepare approval transaction, considering gas limit
+    async def buildTxForApproveTradeWithRouter(self, token_address, wallet_address, amount=None)-> Dict[str, Any]:
+        # Assuming you have defined apiRequestUrl() function to construct the URL
+        url = self.apiRequestUrl("/approve/transaction", {"tokenAddress": token_address, "amount": amount} if amount else {"tokenAddress": token_address})
+        response = requests.get(url, headers=self.headers)
+        transaction = response.json() 
+
+        # Estimate gas limit
+        wallet_address = wallet_address
+        gas_limit = self.web3.eth.estimateGas(transaction, from_address=wallet_address)
+        #TODO Check return type
+        return {**transaction, "gas": gas_limit}
     
 if __name__ == "__main__":
     # Create an instance of InchConnector
