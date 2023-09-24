@@ -683,8 +683,9 @@ class a(object):
         tool = a.block(tool)()
 
 
-        from langchain.tools import Tool
         if langchain:
+            from langchain.tools import Tool
+
             return Tool.from_function( func=tool.call, 
                                     name=tool.block_name(),
                                     description=tool.description)
