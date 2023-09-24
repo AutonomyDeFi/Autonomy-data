@@ -100,8 +100,6 @@ class ServerHttp(a.Block):
         return result
         
     
-
-
     def start(self, **kwargs):
         import uvicorn
 

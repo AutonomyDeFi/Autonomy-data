@@ -30,12 +30,12 @@ class InchPrices(a.Tool):
         self.token_mappings = {
         "usdc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "wsteth": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
-        "reth": "0xae78736cd615f374d3085123a210448e74fc6393",
+        "reth": "0xae78736Cd615f374D3085123A210448E74Fc6393",
         "dai": "0x6b175474e89094c44da98b954eedeac495271d0f",
         "usdt": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "wbtc": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-        "weth": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-        }
+        "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+    }
         self.reverse_token_mappings = {v: k for k, v in self.token_mappings.items()}
 
 
@@ -64,3 +64,12 @@ class InchPrices(a.Tool):
             print("Failed to fetch token prices.", response.text)
 
         return response
+    
+
+if __name__ == "__main__":
+    instance = InchPrices()
+    result = instance.call(tokens=['weth', 'usdc'])
+    print(result)
+#      aave_instance = AaveV3()
+#      result=aave_instance.call(chain="Ethereum", symbol="WETH")
+#      print(result)
