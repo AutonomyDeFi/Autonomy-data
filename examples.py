@@ -87,12 +87,12 @@ examples_dict = {
                 "tool_name": "tool.cheapest_token",
                 "output": "Token symbol"
             },
-            "3": {
+            "4": {
                 "task": "Sell the cheapest token",
                 "tool_name": "tool.swap",
                 "output": "Transaction Hash"
             },
-            "4": {
+            "5": {
                 "task": "Buy the more expensive token",
                 "tool_name": "tool.swap",
                 "output": "Transaction hash"
