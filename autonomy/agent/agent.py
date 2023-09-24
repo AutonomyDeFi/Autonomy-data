@@ -8,12 +8,10 @@ class Agent(a.Block):
     """
 
     def __init__(self,
-                model:str='gpt-3.5-turbo-16k',
                 tools: List[str]=None,
                 memory : dict= {} #TODO
                 ):
         self.set_tools(tools)
-        self.model = model
         self.memory = memory
         self.model = a.block('llm.openai')()
 
@@ -37,13 +35,14 @@ class Agent(a.Block):
         INSTRUCTIONS:
         Suggest ONE tool to use for this task. Return in the format, 
         if you dont know the tool, return it as None.
-        Only RETURN THE ANSWER if you know it. Otherwise, return None.        
+        Return the answer after the tool is used.     
 
         OUTPUT FORMAT:
-        {{tool_name:str, tool_kwargs:dict, answer:str = None}} 
+        {{tool_name:str, tool_kwargs:dict, answer:str }} 
 
         ANSWER       
         ```json"""
+
 
         prompt = json.dumps(prompt)
         return prompt
@@ -53,7 +52,7 @@ class Agent(a.Block):
               max_tokens=1000, 
               min_steps = 2,
               max_steps:int=10,
-              model='gpt-3.5-turbo-instruct',
+              model = 'gpt-3.5-turbo-16k',
               step = 0 ) -> str:
         
 
@@ -73,11 +72,15 @@ class Agent(a.Block):
             print(f"Retrying with {max_steps} trials left.")
             return self.call(task=task, max_steps=max_steps, min_steps=min_steps, step=step)
 
-        if 'answer' in r and step > min_steps:
+        a.print(memory, r)
+        if r.get('answer', None) not in ['null', None] and step >= min_steps:
             return r['answer']
-        result = self.tools[r['tool_name']].call(**r['tool_kwargs'])
-        history = {'tool': r['tool_name'],'result': result}
-        memory['history'] = memory.get('history', []) + [history]
+        if 'tool_name' in r:
+            a.print('[bold]Calling tool[/bold]', r['tool_name'], r['tool_kwargs'])
+            result = self.tools[r['tool_name']].call(**r['tool_kwargs'])
+            memory[r['tool_name']] =  {'tool': r['tool_name'],
+                                        'result': result, 
+                                        'kwargs': r['tool_kwargs']}
         if max_steps > 0:
             return self.call(task=task, memory=memory, min_steps=min_steps, step=step)
         

@@ -29,13 +29,13 @@ class AaveV3(a.Tool):
         here is an input:     result=aave_instance.call(chain="Ethereum", symbol="ETH")
     """
 
-    def call(self, chain: str = 'Ethereum', project: str = 'aave-v3', symbol: str = None) -> dict:
+    def call(self, chain: str = 'Ethereum', project: str = 'aave-v3') -> dict:
             """Initializes the state with the latest AAVE V3 APY."""
             url = "https://yields.llama.fi/pools"
             # Only include parameters that are not None in the request
             if chain!=None:
                 chain=str(chain).capitalize()
-            params = {k: v for k, v in {'chain': chain, 'project': project, 'symbol': symbol}.items() if v is not None}
+            params = {k: v for k, v in {'chain': chain, 'project': project}.items() if v is not None}
     
             response = requests.get(url, timeout=10, params=params)
             if response.status_code == 200:
@@ -46,8 +46,7 @@ class AaveV3(a.Tool):
                 filtered_data = [
                     item for item in data if 
                     (item.get("project") == project if project is not None else True) and 
-                    (item.get("chain") == chain if chain is not None else True) and 
-                    (item.get("symbol") == symbol if symbol is not None else True)
+                    (item.get("chain") == chain if chain is not None else True)
                 ]
                 
                 if filtered_data:
@@ -56,7 +55,6 @@ class AaveV3(a.Tool):
                         results.append({
                             "apy": item["apy"],
                             "market": project,
-                            "asset": symbol if symbol is not None else item["symbol"],
                             "chain": chain if chain is not None else item["chain"],
                             "timestamp": time.time(),
                         })

@@ -35,6 +35,8 @@ class InchPrices(a.Tool):
         "wbtc": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
         "weth": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
     }
+        self.reverse_token_mappings = {v: k for k, v in self.token_mappings.items()}
+
 
 
     def call(self, tokens: List[str]= ['weth']) -> dict[str, float]:
@@ -42,18 +44,23 @@ class InchPrices(a.Tool):
         for i,t in enumerate(tokens):
             if t.lower() in self.token_mappings:
                 tokens[i] = self.token_mappings.get(t.lower())           
-        print(tokens)
 
         payload = {
             "tokens": tokens
         }
 
         response = requests.post(self.url, json=payload, headers={'Authorization': f'Bearer {self.api_key}'})
-        print(response)
         if response.status_code == 200:
             prices = response.json()
             print("Prices for requested tokens:")
+            response = {}
             for token_address, price in prices.items():
-                print(f"{token_address}: {price}")
+                if token_address in self.reverse_token_mappings:
+                    response[self.reverse_token_mappings[token_address]] = price
+                else:
+                    response[token_address] = price
+                
         else:
             print("Failed to fetch token prices.", response.text)
+
+        return response
