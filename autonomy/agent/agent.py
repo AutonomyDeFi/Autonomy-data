@@ -9,7 +9,7 @@ class Agent(a.Block):
 
     def __init__(self,
                 tools=None,
-                memory = {}
+                memory = {} #TODO
                 ):
         self.set_tools(tools)
         self.memory = memory
