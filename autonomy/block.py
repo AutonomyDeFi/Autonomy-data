@@ -738,7 +738,7 @@ class a(object):
         code = cls.code()
         get_general_schema = a.import_object('autonomy.tool.openai_helper.get_general_schema')
         return get_general_schema(code)
-    
+
 
     @classmethod
     def talk(cls, prompt):

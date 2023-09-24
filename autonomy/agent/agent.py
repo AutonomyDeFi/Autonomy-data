@@ -77,6 +77,7 @@ class Agent(a.Block):
             return r['answer']
         if 'tool_name' in r:
             a.print('[bold]Calling tool[/bold]', r['tool_name'], r['tool_kwargs'])
+
             result = self.tools[r['tool_name']].call(**r['tool_kwargs'])
             memory[r['tool_name']] =  {'tool': r['tool_name'],
                                         'result': result, 
