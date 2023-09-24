@@ -22,7 +22,7 @@ examples_dict = {
         "tasks": {
             "1": {
                 "task": "Use Balance agent to check my balance and make sure I have USDC",
-                "tool_name": "tool.swap",
+                "tool_name": "tool.inch.balances",
                 "output": "Balance checked, USDC available"
             },
             "2": {
@@ -30,12 +30,12 @@ examples_dict = {
                 "tool_name": "tool.lido",
                 "output": "APY retrieved for lido"
             },
-            "2": {
+            "3": {
                 "task": "Ask DeFi llama to check the APYs for rocket-pool",
                 "tool_name": "tool.rocket-pool",
                 "output": "APY retrieved for rocket-pool"
             },
-            "3": {
+            "4": {
                 "task": "Use highest APY tool to get APY",
                 "tool_name": "tool.get_best_apy",
                 "output": "Highest APY retrieved"
@@ -48,7 +48,7 @@ examples_dict = {
         "tasks": {
             "1": {
                 "task": "Ask the Balance agent how much USDC the user has",
-                "tool_name": "tool.swap",
+                "tool_name": "tool.inch.balances",
                 "output": "Balance checked, USDC available"
             },
             "2": {
@@ -56,21 +56,52 @@ examples_dict = {
                 "tool_name": "tool.lido",
                 "output": "APY retrieved for lido"
             },
-            "2": {
+            "3": {
                 "task": "Stake half the money ($25) with Rocketpool",
                 "tool_name": "tool.rocket-pool-stake",
                 "output": "Transaction Hash"
             },
-            "3": {
+            "4": {
                 "task": "Stake half the money ($25) with Lido",
                 "tool_name": "tool.lido-stake",
                 "output": "Transaction hash"
             }
         },
-        "final_output": "Two Transaction Hashes"
+        "final_output": "2 Transaction Hashes"
+    }, 
+    "example4": {
+        "natural_lang_input": "Check the price of all my tokens, sell the cheapest one, and buy the more expensive one",
+        "tasks": {
+            "1": {
+                "task": "Get the balances of all tokens in a user's wallet",
+                "tool_name": "tool.inch.balances",
+                "output": "json_blob of balances"
+            },
+            "2": {
+                "task": "Send in the token addresses and get the prices of all tokens",
+                "tool_name": "tool.Inch.get_requested_token_prices",
+                "output": """(f"{token_address}: {price}"""
+            },
+            "3": {
+                "task": "Find the cheapest token",
+                "tool_name": "tool.cheapest_token",
+                "output": "Token symbol"
+            },
+            "3": {
+                "task": "Sell the cheapest token",
+                "tool_name": "tool.swap",
+                "output": "Transaction Hash"
+            },
+            "4": {
+                "task": "Buy the more expensive token",
+                "tool_name": "tool.swap",
+                "output": "Transaction hash"
+            }
+        },
+        "final_output": "2 Transaction Hashes"
     }
-}
 
+}
 
 
 
