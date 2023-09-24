@@ -30,7 +30,8 @@ class DefiLlama(a.Tool):
         """Initializes the state with the latest Defillama Pool Data."""
         url = "https://yields.llama.fi/pools"
         # Only include parameters that are not None in the request
-        chain=str(chain).capitalize()
+        if chain!=None:
+            chain=str(chain).capitalize()
 
         params = {k: v for k, v in {'chain': chain.capitalize(), 'project': project, 'symbol': symbol}.items() if v is not None}
 

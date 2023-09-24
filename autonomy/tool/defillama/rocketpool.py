@@ -43,7 +43,8 @@ class RocketPool(a.Tool):
             """Initializes the state with the latest rocket-pool APY."""
             url = "https://yields.llama.fi/pools"
             # Only include parameters that are not None in the request
-            chain=str(chain).capitalize()
+            if chain!=None:
+                 chain=str(chain).capitalize()
             params = {k: v for k, v in {'chain': chain, 'project': project, 'symbol': symbol}.items() if v is not None}
     
             response = requests.get(url, timeout=10, params=params)
@@ -64,12 +65,14 @@ class RocketPool(a.Tool):
                     for item in filtered_data:
                         results.append({
                             "apy": item["apy"],
-                            "market": project,
+                            "market": project if project is not None else item["project"],
                             "asset": symbol if symbol is not None else item["symbol"],
                             "chain": chain if chain is not None else item["chain"],
                             "timestamp": time.time(),
                         })
-                    return results
+                    best_apy_item = max(results, key=lambda x: x["apy"])
+                    return best_apy_item
+
                 else:
                     return [{'error': f'No data found for the given parameters'}]
             else:
@@ -77,7 +80,7 @@ class RocketPool(a.Tool):
 
 # if __name__ == "__main__":
 #      rocket_pool_instance = RocketPool()
-#      result=rocket_pool_instance.call(project="rocket-pool", symbol="RETH")
+#      result=rocket_pool_instance.call(project="rocket-pool")
 #      print(result)
 
 

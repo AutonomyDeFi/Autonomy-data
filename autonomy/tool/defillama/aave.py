@@ -33,7 +33,8 @@ class AaveV3(a.Tool):
             """Initializes the state with the latest AAVE V3 APY."""
             url = "https://yields.llama.fi/pools"
             # Only include parameters that are not None in the request
-            chain=str(chain).capitalize()
+            if chain!=None:
+                chain=str(chain).capitalize()
             params = {k: v for k, v in {'chain': chain, 'project': project, 'symbol': symbol}.items() if v is not None}
     
             response = requests.get(url, timeout=10, params=params)
