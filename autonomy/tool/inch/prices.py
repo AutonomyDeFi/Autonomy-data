@@ -2,6 +2,7 @@ import requests
 import json
 from typing import Optional, Dict, Any
 import time
+from typing import *
 
 import os
 from dotenv import load_dotenv
@@ -26,22 +27,25 @@ class InchPrices(a.Tool):
         self.url = url
 
         self.token_mappings = {
-            "cusdcv3": "0x3EE77595A8459e93C2888b13aDB354017B198188",
-            "cwethv3": "0x9A539EEc489AAA03D588212a164d0abdB5F08F5F",
-            "usdc": "0x07865c6E87B9F70255377e024ace6630C1Eaa37F",
-            "wbtc": "0xAAD4992D949f9214458594dF92B44165Fb84dC19",
-            "weth": "0x42a71137C09AE83D8d05974960fd607d40033499"
-        }
+        "usdc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "wsteth": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+        "reth": "0xae78736cd615f374d3085123a210448e74fc6393",
+        "dai": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "usdt": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "wbtc": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+        "weth": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+    }
 
 
-    def call(self, params) -> dict[str, float]:
-        # for i,t in enumerate(tokens):
-        #     if t.lower() in self.token_mappings:
-        #         tokens[i] = self.token_mappings.get(t.lower())           
-        # print(tokens)
+    def call(self, tokens: List[str]= ['weth']) -> dict[str, float]:
+
+        for i,t in enumerate(tokens):
+            if t.lower() in self.token_mappings:
+                tokens[i] = self.token_mappings.get(t.lower())           
+        print(tokens)
 
         payload = {
-            "tokens": params
+            "tokens": tokens
         }
 
         response = requests.post(self.url, json=payload, headers={'Authorization': f'Bearer {self.api_key}'})
@@ -53,21 +57,3 @@ class InchPrices(a.Tool):
                 print(f"{token_address}: {price}")
         else:
             print("Failed to fetch token prices.", response.text)
-
-    def call(self, tokens:list[str]):
-
-        payload = {
-            "tokens": tokens
-        }
-
-        response = requests.post(self.url, json=payload, headers={'Authorization': f'Bearer {self.api_key}'})
-        if response.status_code == 200:
-            prices = response.json()
-            print("Prices for requested tokens:")
-            for token_address, price in prices.items():
-                print(f"{token_address}: {price}")
-        else:
-            print("Failed to fetch token prices.")
-
-if __name__ == "__main__":
-    InchPrices().call(["weth", "usdc", "wbtc"])
