@@ -30,12 +30,12 @@ examples_dict = {
                 "tool_name": "tool.lido",
                 "output": "APY retrieved for lido"
             },
-            "2": {
+            "3": {
                 "task": "Ask DeFi llama to check the APYs for rocket-pool",
                 "tool_name": "tool.rocket-pool",
                 "output": "APY retrieved for rocket-pool"
             },
-            "3": {
+            "4": {
                 "task": "Use highest APY tool to get APY",
                 "tool_name": "tool.get_best_apy",
                 "output": "Highest APY retrieved"
@@ -56,12 +56,12 @@ examples_dict = {
                 "tool_name": "tool.lido",
                 "output": "APY retrieved for lido"
             },
-            "2": {
+            "3": {
                 "task": "Stake half the money ($25) with Rocketpool",
                 "tool_name": "tool.rocket-pool-stake",
                 "output": "Transaction Hash"
             },
-            "3": {
+            "4": {
                 "task": "Stake half the money ($25) with Lido",
                 "tool_name": "tool.lido-stake",
                 "output": "Transaction hash"
