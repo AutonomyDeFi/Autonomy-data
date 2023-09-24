@@ -36,16 +36,13 @@ class Agent(a.Block):
 
         {self.example}
 
-
         MEMORY:
 
         {memory}
 
         INSTRUCTIONS:
 
-        Suggest ONE tool to use for this task. Return in the OUTPUT FORMAT., 
-        if you dont know the tool, return it as None.
-        Return the answer after the tool is used.     
+        Follow the Example   
 
         OUTPUT FORMAT:
 

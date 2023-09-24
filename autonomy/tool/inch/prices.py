@@ -39,7 +39,6 @@ class InchPrices(a.Tool):
         self.reverse_token_mappings = {v: k for k, v in self.token_mappings.items()}
 
 
-
     def call(self, tokens: List[str]= ['weth']) -> dict[str, float]:
 
         for i,t in enumerate(tokens):
