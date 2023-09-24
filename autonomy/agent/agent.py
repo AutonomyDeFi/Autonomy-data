@@ -21,28 +21,32 @@ EXAMPLES={
         },
         "final_output": "0xc07215bf4af1ce282280c18e7470cba57fb83138b4df62fb0d4ded9133e61d93"
     },
+    
     "example2": {
         "natural_lang_input": "Here is $100. Get me the highest staking APY on my USDC.",
         "tasks": {
             "1": {
                 "task": "Use Balance agent to check my balance and make sure I have USDC",
                 "tool_name": "tool.inch.balances",
-                "arguments": 
+                "arguments": ["wallet_address:str"],
                 "output": "Balance checked, USDC available"
             },
             "2": {
                 "task": "Ask DeFi llama to check the APYs for lido",
                 "tool_name": "tool.lido",
+                "arguments": ['Ethereum', 'lido'],
                 "output": "APY retrieved for lido"
             },
             "3": {
                 "task": "Ask DeFi llama to check the APYs for rocket-pool",
                 "tool_name": "tool.rocket-pool",
+                "arguments": ['Ethereum', 'rocket-pool', "RETH"],
                 "output": "APY retrieved for rocket-pool"
             },
             "4": {
                 "task": "Use highest APY tool to get APY",
                 "tool_name": "tool.get_best_apy",
+                "arguments": ["data1", "data2"],
                 "output": "Highest APY retrieved"
             }
         },
