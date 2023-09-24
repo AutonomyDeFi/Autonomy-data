@@ -1,3 +1,6 @@
 [submodule "autonomy/langchain"]
 	path = autonomy/langchain
 	url = https://github.com/langchain-ai/langchain.git
+[submodule "langchain"]
+	path = langchain
+	url = https://github.com/langchain-ai/langchain
