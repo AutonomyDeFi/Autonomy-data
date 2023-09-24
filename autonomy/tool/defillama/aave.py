@@ -41,7 +41,6 @@ class AaveV3(a.Tool):
         {'apy': 0.26722, 'market': 'aave-v3', 'asset': 'CBETH', 'chain': 'Ethereum', 'timestamp': 1695493935.626485}, 
         {'apy': 0.21244, 'market': 'aave-v3', 'asset': 'MKR', 'chain': 'Ethereum', 'timestamp': 1695493935.626485}, 
     """
-    
 
     def call(self, chain: str = None, project: str = 'aave-v3', symbol: str = None) -> dict:
             """Initializes the state with the latest AAVE V3 APY."""

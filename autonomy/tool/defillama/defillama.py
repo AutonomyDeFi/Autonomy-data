@@ -12,7 +12,6 @@ load_dotenv()
 
 import autonomy as a
 
-
 class DefiLlama(a.Tool):       
     description = """
         Connects to the Defillama API and allows the user to select which chain, project, symbol or pool they want. 
@@ -129,7 +128,7 @@ class DefiLlama(a.Tool):
 
 
 
-if __name__ == "__main__":
-     dl_instance = DefiLlama()
-     result=dl_instance.call(chain="ethereum", project="compound")
-     print(result)
+# if __name__ == "__main__":
+#      dl_instance = DefiLlama()
+#      result=dl_instance.call(chain="ethereum", project="compound")
+#      print(result)
