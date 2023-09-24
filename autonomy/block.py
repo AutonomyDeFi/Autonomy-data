@@ -655,17 +655,20 @@ class a(object):
         return json.loads(data)
 
     @classmethod
-    def tools(cls, search: str = None, info:bool = False) -> list:
+    def tools(cls, search: str = None, info:bool = False, langchain=False) -> list:
         tools =  a.blocks('tool')
         if search != None:
             tools = [t for t in tools if t.startswith(search)]
         tools = sorted(tools)
         if info == True:
             tools = [a.block(t).info() for t in tools]
+
+        if langchain:
+            return [a.get_tool(t) for t in tools]
         return tools
 
     @classmethod
-    def get_tool(cls, tool:str, return_fn=True, langchain=True):
+    def get_tool(cls, tool:str, langchain=True):
         tool = a.block(tool)()
 
         from langchain.tools import Tool

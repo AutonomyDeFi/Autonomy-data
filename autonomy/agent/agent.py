@@ -8,9 +8,9 @@ class Agent(a.Block):
     """
 
     def __init__(self,
-                model='gpt-3.5-turbo', 
-                tools=None,
-                memory = {} #TODO
+                model:str='gpt-3.5-turbo',
+                tools: List[str]=None,
+                memory : dict= {} #TODO
                 ):
         self.set_tools(tools)
         self.model = model
@@ -55,9 +55,10 @@ class Agent(a.Block):
             r = self.model.chat(prompt, model=self.model, max_tokens=max_tokens)
             r = json.loads(r.split('ANSWER:')[1].strip())
             result = self.tools[r['tool_name']].call(**r['tool_kwargs'])
+            a.print(result)
+
         except Exception as e:
             result = {'success': False, 'msg': f"Error: {e}"}
-            if 
             a.print(result)
 
         return result

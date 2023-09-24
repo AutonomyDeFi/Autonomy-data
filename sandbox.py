@@ -1,2 +1,3 @@
-from autonomy.tool.openai_helper import get_general_schema
-
+import autonomy as a
+tools = [a.get_tool(t) for t in a.tools()]
+a.print(tools)
