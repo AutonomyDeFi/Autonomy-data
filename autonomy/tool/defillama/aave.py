@@ -29,7 +29,7 @@ class AaveV3(a.Tool):
         here is an input:     result=aave_instance.call(chain="Ethereum", symbol="ETH")
     """
 
-    def call(self, chain: str = None, project: str = 'aave-v3', symbol: str = None) -> dict:
+    def call(self, chain: str = 'Ethereum', project: str = 'aave-v3', symbol: str = None) -> dict:
             """Initializes the state with the latest AAVE V3 APY."""
             url = "https://yields.llama.fi/pools"
             # Only include parameters that are not None in the request

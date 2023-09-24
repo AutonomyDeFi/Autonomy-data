@@ -26,6 +26,9 @@ class Apegent(a.Block):
         - When you are done, set the 'finish' field to True and the answer field to your answer.
         """
 
+
+
+
         prompt = {
             'task': task,
             'tools': self.tool2info,
@@ -84,6 +87,6 @@ class Apegent(a.Block):
     def set_tools(self, tools: List[str]):
         if tools == None:
             tools = a.tools()
-        self.tools = {tool: a.block(tool)() for tool in tools}
+        self.tools = {tool: a.get_tool(tool) for tool in tools}
         self.tool2info = {tool_name: tool.info() for tool_name, tool in self.tools.items()}
         return {'success': True, 'msg' : f"Set tools to {tools}"}

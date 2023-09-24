@@ -7,20 +7,16 @@ class Agent(a.Block):
     An agent has tools and memory.
     """
 
-
     def __init__(self,
-                model = 'llm.openai',
                 tools=None,
                 memory = {}
                 ):
         self.set_tools(tools)
-        self.model = a.block(model)()
         self.memory = memory
+        self.model = a.block('llm.openai')()
 
 
-
-    def call(self, task: str, max_steps=10, ) -> str:
-
+    def prompt(self, task: str) -> str:
         instruction = """
         Your goal is to use the tools and memory to answer the question.
         - To use a tool, call it by filling our the tool and kwargs fields in the 'action'.
@@ -37,53 +33,29 @@ class Agent(a.Block):
             'instructions': instruction,
             'finish': False,
             'step': 0
-
         }
 
         prompt = json.dumps(prompt)
+        return prompt
+
+    def call(self, task: str, max_steps=10, max_tokens=10, model='gpt-3.5-turbo') -> str:
+
+
         prompt = self.prompt(task=task)
-
-        r = self.model.chat(prompt)
-
+        r = self.model.chat(prompt, model=model, max_tokens=max_tokens)
         return r
 
-        # while max_steps > 0 :
-            
-
-        #     try:
-        #         assert isinstance(r, str)
-        #         r = json.loads(r)
-        #     except Exception as e:
-        #         return r         
-
-        #     r['finish'] = r['finish'] or r['step'] > max_steps
-        #     r['task'] = task
-        #     a.print(r)
-        #     if r['finish']:
-        #         return r['answer']
-
-        #     if r['action']['tool'] != None:
-        #         tool = r['action']['tool']
-        #         tool_kwargs = r['action']['kwargs']
-        #         r['memory'][tool] = self.tool[tool](**tool_kwargs)
-
-    
-        #     max_steps -= 1
-
-        # return r['memory']
-    
-
-
-
     @classmethod
-    def test(cls, ):
+    def test(cls):
         self = cls()
-        self.call('what is the price of eth?')
+        return self.call('what is the price of eth?')
 
-     
     def set_tools(self, tools: List[str]):
         if tools == None:
             tools = a.tools()
         self.tools = {tool: a.block(tool)() for tool in tools}
         self.tool2info = {tool_name: tool.info() for tool_name, tool in self.tools.items()}
         return {'success': True, 'msg' : f"Set tools to {tools}"}
+
+    
+

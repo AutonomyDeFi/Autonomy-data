@@ -638,14 +638,18 @@ class a(object):
         if info == True:
             tools = [a.block(t).info() for t in tools]
         return tools
+
     @classmethod
-    def get_tool(cls, tool:str, return_fn=True, ):
+    def get_tool(cls, tool:str, return_fn=True, langchain=True):
         tool = a.block(tool)()
 
         from langchain.tools import Tool
-        return Tool.from_function( func=tool.call, 
-                                  name=tool.name(),
-                                  description="useful for when you need to answer questions about current events"),
+        if langchain:
+            return Tool.from_function( func=tool.call, 
+                                    name=tool.block_name(),
+                                    description=tool.description)
+        
+        return tool
 
     @classmethod
     def tool2info(cls, return_json_str:bool = False):
