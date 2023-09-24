@@ -461,6 +461,8 @@ class a(object):
         return cls.path2name(module_path)
         return module_path
     
+    name = block_name
+    
 
     @classmethod
     def test(cls):
@@ -631,12 +633,19 @@ class a(object):
     def tools(cls, search: str = None, info:bool = False) -> list:
         tools =  a.blocks('tool')
         if search != None:
-            tools = [t for t in tools if search in t]
+            tools = [t for t in tools if t.startswith(search)]
         tools = sorted(tools)
         if info == True:
             tools = [a.block(t).info() for t in tools]
         return tools
+    @classmethod
+    def get_tool(cls, tool:str, return_fn=True, ):
+        tool = a.block(tool)()
 
+        from langchain.tools import Tool
+        return Tool.from_function( func=tool.call, 
+                                  name=tool.name(),
+                                  description="useful for when you need to answer questions about current events"),
 
     @classmethod
     def tool2info(cls, return_json_str:bool = False):
