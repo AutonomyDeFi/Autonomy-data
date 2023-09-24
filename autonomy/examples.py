@@ -42,6 +42,32 @@ examples_dict = {
             }
         },
         "final_output": "0xc07215bf4af1ce282280c18e7470cba57fb83138b4df62fb0d4ded9133e61d93"
+    }, 
+    "example3": {
+        "natural_lang_input": "Split $50 between Rocketpool and Lido",
+        "tasks": {
+            "1": {
+                "task": "Ask the Balance agent how much USDC the user has",
+                "tool_name": "tool.swap",
+                "output": "Balance checked, USDC available"
+            },
+            "2": {
+                "task": "Ask DeFi llama to check the APYs for lido",
+                "tool_name": "tool.lido",
+                "output": "APY retrieved for lido"
+            },
+            "2": {
+                "task": "Stake half the money ($25) with Rocketpool",
+                "tool_name": "tool.rocket-pool-stake",
+                "output": "Transaction Hash"
+            },
+            "3": {
+                "task": "Stake half the money ($25) with Lido",
+                "tool_name": "tool.lido-stake",
+                "output": "Transaction hash"
+            }
+        },
+        "final_output": "Two Transaction Hashes"
     }
 }
 
