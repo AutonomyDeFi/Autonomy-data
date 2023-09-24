@@ -18,6 +18,7 @@ class Inch(a.Tool):
         self.url = url
 
 
+
     def get_whitelisted_token_prices(self):
         
         response = requests.get(self.url,  headers={'Authorization': f'Bearer {self.api_key}'})
@@ -38,7 +39,7 @@ class Inch(a.Tool):
             "tokens": tokens
         }
 
-        response = requests.post(self.url, json=payload)
+        response = requests.post(self.url, json=payload, headers={'Authorization': f'Bearer {self.API_KEY}'})
         if response.status_code == 200:
             prices = response.json()
             print("Prices for requested tokens:")

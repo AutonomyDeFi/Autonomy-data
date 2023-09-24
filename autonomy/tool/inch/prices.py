@@ -36,15 +36,15 @@ class InchPrices(a.Tool):
 
     def call(self, tokens:list[str] = ['eth']) -> dict[str, float]:
         for i,t in enumerate(tokens):
-            print(t)
-            tokens[i] = self.token_mappings.get(t.lower())           
+            if t.lower() in self.token_mappings:
+                tokens[i] = self.token_mappings.get(t.lower())           
         print(tokens)
 
         payload = {
             "tokens": tokens
         }
 
-        response = requests.post(self.url, params=payload, headers={'Authorization': f'Bearer {self.api_key}'})
+        response = requests.post(self.url, json=payload, headers={'Authorization': f'Bearer {self.api_key}'})
         print(response)
         if response.status_code == 200:
             prices = response.json()
@@ -55,4 +55,4 @@ class InchPrices(a.Tool):
             print("Failed to fetch token prices.", response.text)
 
     def test(self):
-        self.call(["0x42a71137C09AE83D8d05974960fd607d40033499"])
+        self.call(["weth"])
