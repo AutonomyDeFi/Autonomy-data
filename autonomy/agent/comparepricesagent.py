@@ -77,7 +77,7 @@ class Lending(a.Block):
 
         
         if r.get('answer', None) not in ['null', None] and step >= min_steps:
-            result =  r['answer']
+            result = r['answer']
             result = result.split()[0]
             result = self.call_tool('tool.swap', kwargs=dict(tokenin = 'ETH', token_out = 'USDC'))
             return result
@@ -106,4 +106,7 @@ class Lending(a.Block):
         return {'success': True, 'msg' : f"Set tools to {tools}"}
 
     
+
+
+
 
