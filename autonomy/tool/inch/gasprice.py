@@ -6,6 +6,7 @@ import os
 class SwaggerInch(a.Tool):
     def __init__(self, api_key: str = 'INCH_API_KEY'):
         self.api_key = os.getenv(api_key, api_key)
+        
     description = """
     Gets the token prices from the 1inch API.
     """
@@ -28,6 +29,12 @@ class SwaggerInch(a.Tool):
     
         # Parse the JSON response
         response_data = response.json()
-        json_blob = json.dumps(response_data, indent=4)  # Convert the Python dictionary to a JSON formatted string
-        
-        return json_blob
+        # json_blob = json.dumps(response_data, indent=4)  # Convert the Python dictionary to a JSON formatted string
+        # print(json_blob)
+        return response_data["baseFee"]
+    
+
+if __name__ == "__main__":
+     dl_instance = SwaggerInch()
+     result=dl_instance.call()
+     print(result)

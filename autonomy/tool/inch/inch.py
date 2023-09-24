@@ -7,11 +7,12 @@ import os
 from dotenv import load_dotenv
 from web3 import Web3
 import autonomy as a
+from dotenv import load_dotenv
 
 
 class Inch(a.Tool):
     def __init__(self, 
-                 api_key: Optional[str] = 'INCH_API_KEY',
+                 api_key: Optional[str] = 'ONEINCH_API_KEY',
                 url: Optional[str] = "https://api.1inch.dev/price/v1.1/1"
                  ):
         self.api_key = os.getenv(api_key, api_key)

@@ -172,3 +172,5 @@ class AutoGPT(a.Block):
 
     def call(self, prompt:str)->str: 
         self.agent.run(["What were the winning boston marathon times for the past 5 years? Generate a table of the names, countries of origin, and times."])
+
+        

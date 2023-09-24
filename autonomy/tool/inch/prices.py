@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from web3 import Web3
 import autonomy as a
 
+from dotenv import load_dotenv
 
 class InchPrices(a.Tool):
     description = """

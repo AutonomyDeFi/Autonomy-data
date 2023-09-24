@@ -1,6 +1,6 @@
 import autonomy as a
 class ReadFile(a.Tool):
-
+    description = """"Read from a file"""
     def call(self, file_path):
         """Read from a file"""
         try:
