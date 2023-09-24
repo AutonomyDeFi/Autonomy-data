@@ -133,7 +133,6 @@ class Agent(a.Block):
     description = """
     An agent has tools and memory.
     """
-
     def __init__(self,
                 tools: List[str]=None,
                 memory : dict= {} #TODO
