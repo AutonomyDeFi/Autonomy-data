@@ -6,6 +6,6 @@ Autonomy is an autonomous AI Agent and Data marketplace that allows users to buy
 - Install psycopg2
 - Setup the backend, ensure you have python 3.9 or great installed
 - Run the following steps:
-  - run `pip install -e .` (Install the 'backend' package)
+  - run `pip install -e .` (Install the 'autonomy' package)
   - git submodule update --init --recursive to clone (or update) the langchain repo (https://github.com/langchain-ai/langchain.git)
 
