@@ -21,9 +21,9 @@ class Agent(a.Block):
     
         instruction = """
         Your goal is to use the tools and memory to answer the question.
-        - To use a tool, call it by filling our the tool and kwargs fields.
+        - To use a tool, call it by filling our the tool and kwargs fields in the 'action'.
         - You can use the memory to store information while you work. BE CONSICE AS WE ARE LIMITED TO 1000 CHARACTERS.
-        - When you are done, fill out the answer field or call the answer method.
+        - When you are done, set the 'finish' field to True and the answer field to your answer.
         """
 
         prompt = {
@@ -33,6 +33,8 @@ class Agent(a.Block):
             'answer': None,
             'action': {'tool': None, 'kwargs': {}},
             'instructions': instruction,
+            'finish': False,
+            'step': 0
 
         }
 
@@ -41,11 +43,35 @@ class Agent(a.Block):
         return prompt
         
 
-    def call(self, task: str ) -> str:
-        # prompt = self.prompt(task=task)
-        response = self.model.chat(task)
-        print(response)
-        return response
+
+    def call(self, task: str, max_steps=10, ) -> str:
+        prompt = self.prompt(task=task)
+        while max_steps > 0 :
+            r = self.model.chat(prompt)
+
+            try:
+                assert isinstance(r, str)
+                r = json.loads(r)
+            except Exception as e:
+                return r         
+
+            r['finish'] = r['finish'] or r['step'] > max_steps
+            r['task'] = task
+
+            if r['finish']:
+                return r['answer']
+
+            if r['action']['tool'] != None:
+                tool = r['action']['tool']
+                tool_kwargs = r['action']['kwargs']
+                r['memory'][tool] = self.tool[tool](**tool_kwargs)
+
+            a.print(r['answer'])
+            max_steps -= 1
+
+        return r['memory']
+    
+
 
 
     @classmethod
