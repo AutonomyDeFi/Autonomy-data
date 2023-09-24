@@ -4,7 +4,6 @@ import autonomy as a
 import requests
 import json
 import time
-
 class Lido(a.Tool):
     description = """
         Connects to the Defillama API and allows the user to select which chain, project, symbol or pool they want. 
@@ -77,7 +76,8 @@ class Lido(a.Tool):
             """Initializes the state with the latest lido APY."""
             url = "https://yields.llama.fi/pools"
             # Only include parameters that are not None in the request
-            chain=str(chain).capitalize()
+            if chain!=None:
+                chain=str(chain).capitalize()
             params = {k: v for k, v in {'chain': chain, 'project': project, 'symbol': symbol}.items() if v is not None}
     
             response = requests.get(url, timeout=10, params=params)
