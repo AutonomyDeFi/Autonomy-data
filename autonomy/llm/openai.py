@@ -3,6 +3,7 @@ import openai
 import autonomy as a
 from typing import *
 
+
 class OpenAI(a.Block):
     def init(self, api_key: str = 'OPENAI_API_KEY', api_base = "https://openrouter.ai/api/v1"):
         openai.api_base = api_base
@@ -76,3 +77,4 @@ class OpenAI(a.Block):
         input = 'hello world'
         embeddings = self.embed(input)
         return {'status': 'success'}
+    
