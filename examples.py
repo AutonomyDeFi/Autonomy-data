@@ -99,7 +99,24 @@ examples_dict = {
             }
         },
         "final_output": "2 Transaction Hashes"
-    }
+    },
+    "example5": {
+            "natural_lang_input": "compare the token price between USDC and ETH and buy the cheapest one",
+            "tasks": {
+                "1": {
+                    "task": "Compare the price of USDC and ETH and find which one is higher",
+                    "tool_name": "tool.compare_token_price",
+                    "output": "token name"
+                },
+                "2": {
+                    "task": "Buy the cheapest token which is the input of the previous task",
+                    "input": "task1 tool name",
+                    "tool_name": "tool.swap",
+                    "output": "Transaction Hash"
+                },
+            },
+            "final_output": "Transaction Hash"
+        }
 
 }
 
