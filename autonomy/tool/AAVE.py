@@ -1,4 +1,5 @@
 from web3 import Web3 
+import os
 #connect to a local ethereum node
 w3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
 
@@ -29,8 +30,8 @@ def supply(dst_address, asset_address, amount):
     })
     
     # Sign the transaction
-    private_key = 'YourPrivateKey'
-    signed_transaction = w3.eth.account.signTransaction(transaction, private_key)
+    PRIVATE_KEY= os.getenv("PRIVATE_KEY", "")
+    signed_transaction = w3.eth.account.signTransaction(transaction, PRIVATE_KEY)
     
     # Send the transaction
     tx_hash = w3.eth.sendRawTransaction(signed_transaction.rawTransaction)
