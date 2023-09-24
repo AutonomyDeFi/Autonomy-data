@@ -95,16 +95,20 @@ class a(object):
         Get the code of a file in the module
         '''
         import inspect
+    
         return inspect.getsource(cls)
     
     @classmethod
-    def fncode(cls, fn) -> str:
+    def fncode(cls, fn='call') -> str:
         '''
         Get the code of a file in the module
         '''
         import inspect
         fn = cls.resolve_fn(fn)
         return inspect.getsource(fn)
+    
+
+    
     
     @classmethod
     def find_python_class(cls, path:str , class_index:int=0, search:str = None, start_lines:int=2000):
@@ -277,7 +281,7 @@ class a(object):
     
 
     @classmethod
-    def get_schema(cls, fn:str)->dict:
+    def get_schema(cls, fn:str, docs:bool = False)->dict:
         '''
         Get function schema of function in cls
         '''
@@ -291,14 +295,14 @@ class a(object):
                 fn_schema['input'][k] =  str(v.split("<class '")[-1].split("'")[0])
             fn_schema['input'][k] = str(v)
         fn_schema['output'] = fn_schema['input'].pop('return', None)
-        
+
         fn_schema['default'] = cls.get_function_defaults(fn=fn) 
         for k,v in fn_schema['default'].items(): 
             if k not in fn_schema['input'] and v != None:
                 fn_schema['input'][k] = type(v).__name__ if v != None else None
 
-
-
+        if docs: 
+            fn_schema['docs'] = fn.__doc__
         return fn_schema
     
     @classmethod
@@ -336,8 +340,8 @@ class a(object):
         return []
     
     @classmethod
-    def schema(cls,search: str = None, **kwargs) -> 'Schema':
-        return {fn: cls.get_schema(fn=fn) for fn in cls.fns(search=search, **kwargs)}
+    def schema(cls,search: str = None, docs=False) -> 'Schema':
+        return {fn: cls.get_schema(fn=fn, docs=docs) for fn in cls.fns(search=search)}
 
     # ASYNCIO LAND
 
@@ -727,9 +731,9 @@ class a(object):
         return get_general_schema(code)
     
 
-    
-
-     
+    @classmethod
+    def talk(cls, prompt):
+        return a.block('agent')().call(prompt)
     
 
 Block = a

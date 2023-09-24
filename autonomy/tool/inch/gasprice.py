@@ -1,8 +1,11 @@
 import autonomy as a
 import requests
 import json
+import os
 
 class SwaggerInch(a.Tool):
+    def __init__(self, api_key: str = '1INCH_API_KEY'):
+        self.api_key = os.getenv(api_key, api_key)
     description = """
     Gets the token prices from the 1inch API.
     """
@@ -13,7 +16,7 @@ class SwaggerInch(a.Tool):
         url = 'https://api.1inch.dev/gas-price/v1.4/1'
         headers = {
             "accept": "application/json",
-            "Authorization": f"Bearer {self.API_KEY}",
+            "Authorization": f"Bearer {self.api_key}",
         }
         try:
             # Send a GET request to the API
