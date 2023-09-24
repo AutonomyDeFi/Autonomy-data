@@ -18,21 +18,29 @@ class Agent(a.Block):
 
     def prompt(self, task: str) -> str:
         instruction = """
-        Your goal is to use the tools and memory to answer the question.
-        - To use a tool, call it by filling our the tool and 'kwargs' fields in the 'action'.
-        - You can use the memory to store information while you work. BE CONSICE AS WE ARE LIMITED TO 1000 CHARACTERS.
-        - When you are done, set the 'finish' field to True and the answer field to your answer.
+
         """
 
-        prompt = {
-            'task': task,
-            'tools': self.tool2info,
-            'memory': self.memory,
-            'answer': None,
-            'action': {'tool': None, 'kwargs': {}},
-            'instructions': instruction,
-            'finish': False,
-        }
+
+        prompt = f"""
+        Task: {task}
+        
+        Tools:
+        {self.tool_info}
+
+        Memory:
+        {self.memory}
+
+
+        Suggest ONE tool to use for this task. Return in the format:
+
+        ANSWER:
+
+        {{tool_name:str, tool_kwargs:dict)}}
+
+        '''json
+        """
+
 
         prompt = json.dumps(prompt)
         return prompt
@@ -42,7 +50,10 @@ class Agent(a.Block):
 
         prompt = self.prompt(task=task)
         r = self.model.chat(prompt, model=model, max_tokens=max_tokens)
-        return r
+        a.print(r)
+        r = json.loads(r.split('ANSWER:')[1].strip())
+        result = self.tools[r['tool_name']].call(**r['tool_kwargs'])
+        return result
 
     @classmethod
     def test(cls, tools=['tool.defillama.aave']):
@@ -53,7 +64,7 @@ class Agent(a.Block):
         if tools == None:
             tools = a.tools()
         self.tools = {tool: a.block(tool)() for tool in tools}
-        self.tool2info = {tool_name: tool.info() for tool_name, tool in self.tools.items()}
+        self.tool_info = {tool_name: tool.info() for tool_name, tool in self.tools.items()}
         return {'success': True, 'msg' : f"Set tools to {tools}"}
 
     

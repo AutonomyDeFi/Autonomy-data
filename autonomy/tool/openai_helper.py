@@ -3,11 +3,12 @@ import openai
 import json
 from dotenv import load_dotenv
 load_dotenv()
-
 openai.api_key = os.getenv("OPENAI_API_KEY", "")
 
+def get_general_schema(code:str):
 
-def get_general_schema(file_path:str):
+    openai.api_key = os.getenv("OPENAI_API_KEY", "")
+
     PROMPT=""""
     Using this as the general schema definition:
     {
@@ -20,8 +21,7 @@ def get_general_schema(file_path:str):
     Write the generalized schema for this tool:
 
     """
-    str_file = return_file_as_str(file_path)
-    full_prompt = PROMPT + str(str_file)
+    full_prompt = PROMPT + code
     print(full_prompt)
     response = openai.Completion.create(
         model="gpt-3.5-turbo-instruct",

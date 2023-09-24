@@ -38,6 +38,22 @@ class Tool(a.Block):
             tool2info[tool_info['name']] = tool_info
         return tool2info
     
+
+    @classmethod
+    def filepath(cls):
+        import inspect
+        return inspect.getfile(cls)
+    
+    @classmethod
+    def code(cls):
+        return cls.get_text(cls.filepath())
+    
+
+    @classmethod
+    def get_general_schema(cls):
+        get_general_schema = a.import_object('autonomy.tool.openai_helper.get_general_schema')
+        return get_general_schema(cls.fncode('call'))
+    
     
 
     

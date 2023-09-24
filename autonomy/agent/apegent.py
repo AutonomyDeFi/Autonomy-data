@@ -28,7 +28,6 @@ class Apegent(a.Block):
 
 
 
-
         prompt = {
             'task': task,
             'tools': self.tool2info,

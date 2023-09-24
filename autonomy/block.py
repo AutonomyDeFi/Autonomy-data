@@ -80,6 +80,31 @@ class a(object):
     @classmethod
     def test(cls):
         print(a.tools())
+
+    @classmethod
+    def filepath(cls,) -> str:
+        '''
+        Get the absolute path of a file in the module
+        '''
+        import inspect
+        return inspect.getfile(cls) 
+    
+    @classmethod
+    def code(cls) -> str:
+        '''
+        Get the code of a file in the module
+        '''
+        import inspect
+        return inspect.getsource(cls)
+    
+    @classmethod
+    def fncode(cls, fn) -> str:
+        '''
+        Get the code of a file in the module
+        '''
+        import inspect
+        fn = cls.resolve_fn(fn)
+        return inspect.getsource(fn)
     
     @classmethod
     def find_python_class(cls, path:str , class_index:int=0, search:str = None, start_lines:int=2000):
@@ -652,10 +677,16 @@ class a(object):
         return tool
 
     @classmethod
+    def get_tool_info(cls, tool:str):
+        tool = a.block(tool)()
+        return tool.info()
+
+    @classmethod
     def tool2info(cls, return_json_str:bool = False):
         import json
         tool2info= {}
         for tool in a.tools(info=False):
+            a.print('Getting schema for tool', tool)
             tool_info = a.block(tool).info()
             tool2info[tool] = tool_info
             if return_json_str:
@@ -682,6 +713,18 @@ class a(object):
                 tool2vec[tool]  = vector
 
         cls.put_json('./tool2vec.json', tool2vec)
+
+
+
+
+    @classmethod
+    def get_general_schema(cls):
+        code = cls.code()
+        get_general_schema = a.import_object('autonomy.tool.openai_helper.get_general_schema')
+        return get_general_schema(code)
+    
+
+    
 
      
     
