@@ -115,15 +115,34 @@ def execution_agent(objective:str,task: str) -> str:
     vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
     tools = a.tools
 
-    agent = AutoGPT.from_llm_and_tools(
-        ai_name="Tom",
-        ai_role="Assistant",
-        tools=tools,
-        llm=llm,
-        memory=vectorstore.as_retriever(search_kwargs={"k": 8}),
-        # human_in_the_loop=True, # Set to True if you want to add feedback at each step.
+    from langchain.agents import AgentType
+    from langchain.llms import OpenAI
+    from langchain.agents import ZeroShotAgent, Tool, AgentExecutor
+    from langchain import OpenAI, SerpAPIWrapper, LLMChain
+    llm_chain = LLMChain(llm=OpenAI(temperature=0), prompt=prompt)
+
+    tool_names = [tool.name for tool in tools]
+    agent = ZeroShotAgent(llm_chain=llm_chain, allowed_tools=tool_names)
+
+    agent_executor = AgentExecutor.from_agent_and_tools(
+        agent=agent, tools=tools, verbose=True
     )
-    agent.run(["What were the winning boston marathon times for the past 5 years? Generate a table of the names, countries of origin, and times."])
+
+    agent_executor.run(
+        input="Swap my Eth to USDC if gas is under $1"
+    )
+    #     prompt = ZeroShotAgent.create_prompt(
+#     tools, prefix=prefix, suffix=suffix, input_variables=["input", "agent_scratchpad"]
+# )
+#     agent = AutoGPT.from_llm_and_tools(
+#         ai_name="Tom",
+#         ai_role="Assistant",
+#         tools=tools,
+#         llm=llm,
+#         memory=vectorstore.as_retriever(search_kwargs={"k": 8}),
+#         # human_in_the_loop=True, # Set to True if you want to add feedback at each step.
+#     )
+#     agent.run(["What were the winning boston marathon times for the past 5 years? Generate a table of the names, countries of origin, and times."])
     # return response.choices[0].text.strip()
 
 # def execution_agent_2(objective:str,task: str) -> str:
