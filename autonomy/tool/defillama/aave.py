@@ -27,19 +27,6 @@ class AaveV3(a.Tool):
         }
 
         here is an input:     result=aave_instance.call(chain="Ethereum", symbol="ETH")
-        here is an example of the output that corresponds with the above input:
-
-        [{'apy': 0.00262, 'market': 'aave-v3', 'asset': 'WSTETH', 'chain': 'Ethereum', 'timestamp': 1695493935.62648},
-        {'apy': 0.08366, 'market': 'aave-v3', 'asset': 'WBTC', 'chain': 'Ethereum', 'timestamp': 1695493935.626482}, 
-        {'apy': 2.28461, 'market': 'aave-v3', 'asset': 'WETH', 'chain': 'Ethereum', 'timestamp': 1695493935.626482}, 
-        {'apy': 0, 'market': 'aave-v3', 'asset': 'SDAI', 'chain': 'Ethereum', 'timestamp': 1695493935.626482}, 
-        {'apy': 0.12134, 'market': 'aave-v3', 'asset': 'RETH', 'chain': 'Ethereum', 'timestamp': 1695493935.626483}, 
-        {'apy': 2.75842, 'market': 'aave-v3', 'asset': 'USDT', 'chain': 'Ethereum', 'timestamp': 1695493935.626483},
-        {'apy': 0, 'market': 'aave-v3', 'asset': 'AAVE', 'chain': 'Ethereum', 'timestamp': 1695493935.626483}, 
-        {'apy': 5.28374, 'market': 'aave-v3', 'asset': 'USDC', 'chain': 'Ethereum', 'timestamp': 1695493935.626484}, 
-        {'apy': 0.01158, 'market': 'aave-v3', 'asset': 'LINK', 'chain': 'Ethereum', 'timestamp': 1695493935.626484},
-        {'apy': 0.26722, 'market': 'aave-v3', 'asset': 'CBETH', 'chain': 'Ethereum', 'timestamp': 1695493935.626485}, 
-        {'apy': 0.21244, 'market': 'aave-v3', 'asset': 'MKR', 'chain': 'Ethereum', 'timestamp': 1695493935.626485}, 
     """
 
     def call(self, chain: str = None, project: str = 'aave-v3', symbol: str = None) -> dict:

@@ -25,9 +25,10 @@ class OpenAI(a.Block):
         'gpt-3.5-turbo-instruct-0914'
     ]
 
-    def chat(self, prompt: str = "Say this is a test",
-              model = 'gpt-3.5-turbo-instruct', 
-              max_tokens: int = 5, 
+    def chat(self,
+              prompt: str = "Say this is a test",
+              model = 'gpt-3.5-turbo-16k-0613', 
+              max_tokens: int = 1000, 
               temperature: float = 0.5) -> str:
             import random
             if not model:
@@ -42,11 +43,11 @@ class OpenAI(a.Block):
                 )
                 return response.choices[0].message['content']
             except Exception as e:
-                 response = openai.Completion.create( model= model, **params)
+                 response = openai.Completion.create( model= model, prompt=prompt,  **params)
                  return response.choices[0].text
     def embed(self, input: Union[List[str],str] = "Say this is a test",
             model = 'text-embedding-ada-002', 
-            max_tokens: int = 5, 
+            max_tokens: int = 1000, 
             temperature: float = 0.5) -> str:
         import random
         if not model:
@@ -69,7 +70,7 @@ class OpenAI(a.Block):
     def test(cls):
         print("Testing OpenAI")
         self = cls()
-        print(self.chat())
+        print(self.chat('what is 2+2?'))
         input = ['hello', 'world']
         embeddings = self.embed(input)
         assert len(embeddings) == len(input)
