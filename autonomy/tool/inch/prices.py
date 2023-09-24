@@ -19,24 +19,24 @@ class InchPrices(a.Tool):
 
     """
     def __init__(self, 
-                 api_key: Optional[str] = '1INCH_API_KEY',
+                 api_key: Optional[str] = 'INCH_API_KEY',
                 url: Optional[str] = "https://api.1inch.dev/price/v1.1/1"
                  ):
         self.api_key = os.getenv(api_key, api_key)
         self.url = url
 
 
-    def call(self, tokens:list[str]) -> dict[str, float]:
+    def call(self, tokens:list[str] = ['Ethereum']) -> dict[str, float]:
 
         payload = {
             "tokens": tokens
         }
 
-        response = requests.post(self.url, json=payload)
+        response = requests.post(self.url, json=payload, headers={'Authorization': f'Bearer {self.api_key}'})
         if response.status_code == 200:
             prices = response.json()
             print("Prices for requested tokens:")
             for token_address, price in prices.items():
                 print(f"{token_address}: {price}")
         else:
-            print("Failed to fetch token prices.")
+            print("Failed to fetch token prices.", response.text)

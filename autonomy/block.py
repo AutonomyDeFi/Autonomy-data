@@ -662,7 +662,7 @@ class a(object):
     def tools(cls, search: str = None, info:bool = False, langchain=False) -> list:
         tools =  a.blocks('tool')
         if search != None:
-            tools = [t for t in tools if t.startswith(search)]
+            tools = [t for t in tools if search in t]
         tools = sorted(tools)
         if info == True:
             tools = [a.block(t).info() for t in tools]
@@ -670,10 +670,18 @@ class a(object):
         if langchain:
             return [a.get_tool(t) for t in tools]
         return tools
+    
+    @classmethod
+    def block_exists(cls, block:str):
+        return block in a.blocks()
 
     @classmethod
-    def get_tool(cls, tool:str, langchain=True):
+    def get_tool(cls, tool:str, langchain=False):
+        if not a.block_exists(tool):
+            tool = 'tool.' + tool
+            assert a.block_exists(tool), f'Block {tool} does not exist'
         tool = a.block(tool)()
+
 
         from langchain.tools import Tool
         if langchain:
@@ -734,6 +742,27 @@ class a(object):
     @classmethod
     def talk(cls, prompt):
         return a.block('agent')().call(prompt)
+    
+    @classmethod
+    def get_function_args(cls, fn):
+        import inspect
+        fn = cls.resolve_fn(fn)
+        args = inspect.getfullargspec(fn).args
+        return args
+    
+    @classmethod
+    def is_class_method(self, fn):
+        return 'cls' in self.get_function_args(fn)
+    
+    @classmethod
+    def is_self_method(self, fn):
+        return 'self' in self.get_function_args(fn)
+    
+    @classmethod
+    def is_static_method(self, fn):
+        return not self.is_class_method(fn) and not self.is_self_method(fn)
+    
+
     
 
 Block = a

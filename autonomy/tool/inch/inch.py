@@ -11,7 +11,7 @@ import autonomy as a
 
 class Inch(a.Tool):
     def __init__(self, 
-                 api_key: Optional[str] = '1INCH_API_KEY',
+                 api_key: Optional[str] = 'INCH_API_KEY',
                 url: Optional[str] = "https://api.1inch.dev/price/v1.1/1"
                  ):
         self.api_key = os.getenv(api_key, api_key)

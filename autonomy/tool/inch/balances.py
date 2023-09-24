@@ -13,7 +13,7 @@ class Inch(a.Tool):
         :return: A JSON blob with token balances.
     """
     def __init__(self, 
-                 api_key: str = '1INCH_API_KEY',
+                 api_key: str = 'INCH_API_KEY',
                  url= "https://api.1inch.dev/balance"):
 
         self.api_key = api_key

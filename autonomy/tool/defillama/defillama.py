@@ -26,14 +26,14 @@ class DefiLlama(a.Tool):
         }
     """
 
-    def call(self, chain: str = None, project: str = None, symbol: str = None) -> dict:
+    def call(self, chain: str = 'Ethereum', project: str = 'lido', symbol:str = 'ETH') -> dict:
         """Initializes the state with the latest Defillama Pool Data."""
         url = "https://yields.llama.fi/pools"
         # Only include parameters that are not None in the request
         if chain!=None:
             chain=str(chain).capitalize()
 
-        params = {k: v for k, v in {'chain': chain.capitalize(), 'project': project, 'symbol': symbol}.items() if v is not None}
+        params = {k: v for k, v in {'chain': chain.capitalize(), 'project': project}.items() if v is not None}
 
         response = requests.get(url, timeout=10, params=params)
         if response.status_code == 200:

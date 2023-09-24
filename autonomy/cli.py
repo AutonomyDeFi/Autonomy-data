@@ -37,8 +37,11 @@ class CLI(a.Block):
             block = a.Block
 
         assert len(args) > 0, 'No function or module specified'
-        fn = args.pop(0)    
-        fn = getattr(block, fn)
+        fn = args.pop(0)  
+        if block.is_self_method(fn):
+            fn = getattr(block(), fn)
+        else:
+            fn = getattr(block, fn)
         if callable(fn):
             result = fn(*args, **kwargs)
         a.print(result)
