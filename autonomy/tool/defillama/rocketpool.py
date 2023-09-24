@@ -70,15 +70,17 @@ class RocketPool(a.Tool):
                             "chain": chain if chain is not None else item["chain"],
                             "timestamp": time.time(),
                         })
-                    return results
+                    best_apy_item = max(results, key=lambda x: x["apy"])
+                    return best_apy_item
+
                 else:
                     return [{'error': f'No data found for the given parameters'}]
             else:
                 return [{'error': f"Failed to fetch data from API -> Status code: {response.status_code}"}]
 
-if __name__ == "__main__":
-     rocket_pool_instance = RocketPool()
-     result=rocket_pool_instance.call(project="rocket-pool", symbol="RETH")
-     print(result)
+# if __name__ == "__main__":
+#      rocket_pool_instance = RocketPool()
+#      result=rocket_pool_instance.call(project="rocket-pool")
+#      print(result)
 
 
