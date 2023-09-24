@@ -13,11 +13,16 @@ class GetBestApy(a.Tool):
         Returns:
             market name as a string
         """
-        if data1["apy"] > data2["apy"]:
+        apy1 = data1.get("apy")
+        apy2 = data2.get("apy")
+        
+        if apy1 is None or apy2 is None:
+            raise ValueError("One of the dictionaries does not contain the key 'apy'")
+        
+        if apy1 > apy2:
             return data1['market']
         else:
             return data2['market']
-
 
 # if __name__ == "__main__":
 #     data1={'apy': 3.16061, 'market': 'rocket-pool', 'asset': 'RETH', 'chain': 'Ethereum', 'timestamp': 1695525398.567652}
