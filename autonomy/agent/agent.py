@@ -9,11 +9,13 @@ EXAMPLES={
             "1": {
                 "task": "Check 1 inch gas",
                 "tool_name": "tool.inch.gasprice",
+                "arguments": [],
                 "output": "Gas price retrieved"
             },
             "2": {
                 "task": "If the price <$1, use Swap Tool for $100",
                 "tool_name": "tool.swap",
+                "arguments": ["eth", "usdc", 100],
                 "output": "Swap executed"
             }
         },
@@ -25,6 +27,7 @@ EXAMPLES={
             "1": {
                 "task": "Use Balance agent to check my balance and make sure I have USDC",
                 "tool_name": "tool.inch.balances",
+                "arguments": 
                 "output": "Balance checked, USDC available"
             },
             "2": {
