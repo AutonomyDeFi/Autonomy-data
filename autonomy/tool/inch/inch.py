@@ -44,8 +44,10 @@ class Inch(a.Tool):
             print("Prices for requested tokens:")
             for token_address, price in prices.items():
                 print(f"{token_address}: {price}")
+            return (f"{token_address}: {price}")
         else:
             print("Failed to fetch token prices.")
+        
 
     def get_prices_for_addresses(self,addresses):
         url = f"{self.url}{','.join(addresses)}"
