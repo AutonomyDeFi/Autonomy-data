@@ -42,6 +42,8 @@ class Client(a.Block):
         request_data = self.serializer.serialize( request_data)
         request = {'data': request_data}
 
+        a.print(request)
+
         result = '{}'
         # start a client session and send the request
         async with aiohttp.ClientSession() as session:
