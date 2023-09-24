@@ -19,7 +19,7 @@ class Agent(a.Block):
     def prompt(self, task: str) -> str:
         instruction = """
         Your goal is to use the tools and memory to answer the question.
-        - To use a tool, call it by filling our the tool and kwargs fields in the 'action'.
+        - To use a tool, call it by filling our the tool and 'kwargs' fields in the 'action'.
         - You can use the memory to store information while you work. BE CONSICE AS WE ARE LIMITED TO 1000 CHARACTERS.
         - When you are done, set the 'finish' field to True and the answer field to your answer.
         """
@@ -32,13 +32,12 @@ class Agent(a.Block):
             'action': {'tool': None, 'kwargs': {}},
             'instructions': instruction,
             'finish': False,
-            'step': 0
         }
 
         prompt = json.dumps(prompt)
         return prompt
 
-    def call(self, task: str, max_steps=10, max_tokens=10, model='gpt-3.5-turbo') -> str:
+    def call(self, task: str, max_steps=10, max_tokens=256, model='gpt-3.5-turbo') -> str:
 
 
         prompt = self.prompt(task=task)
@@ -46,9 +45,9 @@ class Agent(a.Block):
         return r
 
     @classmethod
-    def test(cls):
-        self = cls()
-        return self.call('what is the price of eth?')
+    def test(cls, tools=['tool.defillama.aave']):
+        self = cls(tools=tools)
+        return self.call('What is the situation with ethereum on aave?')
 
     def set_tools(self, tools: List[str]):
         if tools == None:
