@@ -71,8 +71,7 @@ class ServerHttp(a.Block):
 
                 success = True
             except Exception as e:
-                raise e
-                result = c.detailed_error(e)
+                result = {'error': str(e)}
                 success = False
             
             result = self.process_result(result)
@@ -121,6 +120,7 @@ class ServerHttp(a.Block):
             args = []
         if kwargs is None:
             kwargs = {}
+
 
         obj = getattr(self.block, fn)
 
