@@ -33,14 +33,17 @@ class Agent(a.Block):
         {memory}
 
         INSTRUCTIONS:
-        Suggest ONE tool to use for this task. Return in the format, 
+
+        Suggest ONE tool to use for this task. Return in the OUTPUT FORMAT., 
         if you dont know the tool, return it as None.
         Return the answer after the tool is used.     
 
         OUTPUT FORMAT:
+
         {{tool_name:str, tool_kwargs:dict, answer:str }} 
 
-        ANSWER       
+        ANSWER 
+              
         ```json"""
 
 
