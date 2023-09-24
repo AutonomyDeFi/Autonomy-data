@@ -109,7 +109,7 @@ class Lido(a.Tool):
             else:
                 return [{'error': f"Failed to fetch data from API -> Status code: {response.status_code}"}]
 
-if __name__ == "__main__":
-     lido_instance = Lido()
-     result=lido_instance.call(chain="ethereum")
-     print(result)
+# if __name__ == "__main__":
+#      lido_instance = Lido()
+#      result=lido_instance.call(chain="ethereum")
+#      print(result)

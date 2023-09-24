@@ -2,6 +2,11 @@ import autonomy as a
 import json
 from typing import *
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+OPENAI_API_KEY= os.getenv("OPENAI_API_KEY", "")
 
 # testset=["What is the price of ETH?""]
 class Agent(a.Block):
@@ -21,7 +26,6 @@ class Agent(a.Block):
 
 
     def prompt(self, task: str, memory: dict) -> str:
-
 
         prompt = f"""
         TASK/INTENT/QUESTION: 
@@ -71,6 +75,7 @@ class Agent(a.Block):
         
         step=step+1
         result = self.tools[r['tool_name']].call(**r['tool_kwargs'])
+        
         print(result)
 
         # except Exception as e:
