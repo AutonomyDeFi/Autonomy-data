@@ -1,7 +1,7 @@
 import openai
 import pinecone
 import time
-
+import autonomy as a 
 import os
 
 from collections import deque
@@ -113,17 +113,8 @@ def execution_agent(objective:str,task: str) -> str:
     llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=1.0)
     embeddings_model = OpenAIEmbeddings()
     vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
-    tools = [
-        AaveV3().call, 
-        DefiLlama().call, 
-        InchPrices,
-        Lido, 
-        RocketPool,
-        InchPrices, 
-        Inch, 
-        WriteFileTool(),
-        ReadFileTool()
-    ]
+    tools = a.tools
+
     agent = AutoGPT.from_llm_and_tools(
         ai_name="Tom",
         ai_role="Assistant",
@@ -135,15 +126,15 @@ def execution_agent(objective:str,task: str) -> str:
     agent.run(["What were the winning boston marathon times for the past 5 years? Generate a table of the names, countries of origin, and times."])
     # return response.choices[0].text.strip()
 
-def execution_agent_2(objective:str,task: str) -> str:
-    from langchain.agents import AgentType
-    from langchain.llms import OpenAI
-    from langchain.agents import ZeroShotAgent, Tool, AgentExecutor
-    from langchain import OpenAI, SerpAPIWrapper, LLMChain
+# def execution_agent_2(objective:str,task: str) -> str:
+#     from langchain.agents import AgentType
+#     from langchain.llms import OpenAI
+#     from langchain.agents import ZeroShotAgent, Tool, AgentExecutor
+#     from langchain import OpenAI, SerpAPIWrapper, LLMChain
 
-    prompt = ZeroShotAgent.create_prompt(
-    tools, prefix=prefix, suffix=suffix, input_variables=["input", "agent_scratchpad"]
-)
+#     prompt = ZeroShotAgent.create_prompt(
+#     tools, prefix=prefix, suffix=suffix, input_variables=["input", "agent_scratchpad"]
+# )
 def context_agent(query: str, index: str, n: int):
     query_embedding = get_ada_embedding(query)
     index = pinecone.Index(index_name=index)
